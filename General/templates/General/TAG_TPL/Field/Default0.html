@@ -1,0 +1,5 @@
+{% load widget_tweaks %}
+<script type="text/javascript" data-cfasync="false">$( function() {$("#id_{{ field.html_name}}").change( function() {$( "[get='{{ field.html_name }}']" ).attr( "register" , $(this).val() ).trigger('change') })})</script>
+<input type="hidden" get='{{ field.html_name}}' register='{{ field.value }}' > 
+<div class="selectstyle">{% render_field field %}</div>
+

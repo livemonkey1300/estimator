@@ -1,0 +1,11 @@
+{% load widget_tweaks %}
+<script type="text/javascript" data-cfasync="false">
+$( function() {$("#id_{{ field.html_name}}").change( function() {
+  checkedvar = $( this ).find("input[name={{ field.html_name}}]").serialize();
+  console.log( checkedvar );
+  $( "[get='{{ field.html_name }}']" ).attr( "register" , checkedvar ).trigger('change')
+})
+})
+</script>
+<input type="hidden" get='{{ field.html_name}}' register='{{ field.value }}' >
+{% render_field field %}

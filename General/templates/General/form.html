@@ -13,7 +13,7 @@
       <table>
       {% for field in form %}
       <tr>
-        <td>{{field.label}}</td><td>{{field}}</td>
+        <td>{{field.label}}</td><td>{{field|render_field}}</td>
       </tr>
       {% endfor %}
         <tr><td><button type="submit">submit</button></td></tr>

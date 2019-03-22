@@ -1,0 +1,10 @@
+{% load widget_tweaks %}
+<script type="text/javascript" data-cfasync="false">
+  $( function() { $("#id_{{ field.html_name}}").change( function() {$( "[get='{{ field.html_name }}']" ).attr( "register" , $(this).val() ).trigger('change') })})
+  {% if query %}
+    var {{ field.html_name}}_relate = { {% for mykey,myvalue in query.item.items %} {{ mykey }} : {{ myvalue }} , {% endfor %} }
+    $( function() {$( "[get='{{query.relate}}']" ).change( function() {var carray = {{ field.html_name}}_relate[$( this ).attr( "register")];$("#id_{{ field.html_name}}").find('option').hide();for (i = 0; i < carray.length; i++) {if (i == 0){ $("#id_{{ field.html_name}}").val(carray[i]).trigger('change'); }$("#id_{{ field.html_name}}").find('option[value=' + carray[i] +']').show();}})})
+  {% endif %}
+</script>
+<input type="hidden" get='{{ field.html_name}}' register='{{ field.value }}' >
+{% render_field field %}

@@ -107,8 +107,11 @@ def get_virtual_machine(context):
 
 
 @register.filter(is_safe=True)
-def add_xx(field):
+def render_field(field):
     content = { 'field' : field }
+    type = field.field.widget.input_type
+    if type == 'range':
+        return render_to_string('General/TAG_TPL/Field/Number_Slider.html' , content )
     return render_to_string('General/TAG_TPL/Field/default.html' , content )
 
 @register.simple_tag(takes_context=True)

@@ -1,0 +1,10 @@
+{% load widget_tweaks %}
+<script type="text/javascript" data-cfasync="false">
+$( function() {
+  $( "[btn='{{ field.html_name}}_minus']" ).click( function()  {var a = $( "input[name='{{ field.html_name}}']").val();$( "input[name='{{ field.html_name}}']").val( Number(a) - 1 ) ; $( "[get='{{ field.html_name }}']" ).attr( "register" , $( "input[name='{{ field.html_name}}']").val() ).trigger('change') } )
+  $( "[btn='{{ field.html_name}}_plus']" ).click( function()  {var a = $( "input[name='{{ field.html_name}}']").val();$( "input[name='{{ field.html_name}}']").val( Number(a) + 1 ) ; $( "[get='{{ field.html_name }}']" ).attr( "register" , $( "input[name='{{ field.html_name}}']").val() ).trigger('change') } )
+  $("input[name='{{ field.html_name}}']").change( function() {$( "[get='{{ field.html_name }}']" ).attr( "register" , $(this).val() ).trigger('change')})})
+</script>
+<input type="hidden" get='{{ field.html_name}}' register='{{ field.value }}' >
+
+<div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-sm fuse-ripple-ready input_calc" btn="{{ field.html_name}}_minus"  ><i class="icon-minus"></i></button>{% render_field field class+="input_calc_number"  %}<span class='input_calc_number_prefix'>{% if prefix %}{{ prefix }}{% endif %}</span><button type="button" class="btn btn-sm fuse-ripple-ready input_calc" btn="{{ field.html_name}}_plus" ><i class="icon-plus"></i></button></div></br>
