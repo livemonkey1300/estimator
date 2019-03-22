@@ -55,17 +55,20 @@ class EXCHANGE(models.Model):
 
 
 class VOIP(models.Model):
+
+  number_of_employees =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(2000)],verbose_name='Total users' )
+  phone_lines =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(200)],verbose_name='Phone lines' )
+  toll_free =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(50)],verbose_name='Toll-Free numbers' )
+  fax_numbers =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(20)],verbose_name='Fax Numbers' )
+
+
   voip_name = models.CharField(max_length=255,default='')
   business_type = models.CharField(max_length=255,choices=BUSINESS_TYPE_CHOICE,default='Automotive',)
   business_name =  models.CharField(max_length=255,default='Business Name',verbose_name='Business Name',null=True,blank=True)
   extension =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(1000)],verbose_name='Extension' )
   locations =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(100)],verbose_name='Locations' )
-  did_existing_local_number =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(50)],verbose_name='DiD Existing Local Number' )
   did_new_local_number =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(50)],verbose_name='DiD New Local Number' )
-  fax_numbers =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(20)],verbose_name='Fax Numbers' )
   current_phone_provider =  models.CharField(max_length=255,default='Current phone provider',verbose_name='Current phone provider',null=True,blank=True)
-  number_of_employees =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(2000)],verbose_name='Number of employees' )
-  tfs_existing_toll_free_numbers =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(50)],verbose_name='TFs Existing Toll-Free Numbers' )
   tfs_new_toll_free_numbers =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(50)],verbose_name='TFs New Toll-Free Numbers' )
 
   def __str__(self):

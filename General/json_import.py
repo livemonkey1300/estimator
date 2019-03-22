@@ -5,6 +5,13 @@ PRICE_TABLE = {
   'description' :  { 'price' : 0.0 },
   'creator' :  { 'price' : 0.0 },
 
+  #Voip elements
+  'number_of_employees' :  { 'price' : 10.0 },
+  'phone_lines' :  { 'price' : 3.0 },
+  'toll_free' :  { 'price' : 5.0 },
+  'fax_numbers' :  { 'price' : 30.0 },
+
+
   'business_type' : {
   'Automotive' :  0.0 ,
   'Corporate' :  0.0 ,
@@ -45,9 +52,7 @@ PRICE_TABLE = {
   'locations' :  { 'price' : 0.0 },
   'did_existing_local_number' :  { 'price' : 2.0 },
   'did_new_local_number' :  { 'price' : 2.0 },
-  'fax_numbers' :  { 'price' : 28.0 },
   'current_phone_provider' :  { 'price' : 0.0 },
-  'number_of_employees' :  { 'price' : 0.0 },
   'tfs_existing_toll_free_numbers' :  { 'price' : 5.0 },
   'tfs_new_toll_free_numbers' :  { 'price' : 5.0 },
 

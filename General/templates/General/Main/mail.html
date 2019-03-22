@@ -8,6 +8,18 @@
 <style>
 {% include "./CSS/mail_css.css" %}
 </style>
+<style>
+div.sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0px;
+    background-color: #060606;
+    padding: 16px;
+    font-size: 40px;
+    color: #fffbfb;
+}
+</style>
+<div class="sticky">{{form.as_table}}</div>
 </head>
 <body itemscope itemtype="http://schema.org/EmailMessage">
 	<a href="{{flush}}"> Flush </a>

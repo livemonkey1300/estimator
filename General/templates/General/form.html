@@ -13,7 +13,7 @@
       <table>
       {% for field in form %}
       <tr>
-        <td>{{field.label}}</td><td>{{field|render_field}}</td>
+        <td>{{field.label}}</td><td>{% render_field field %}</td>
       </tr>
       {% endfor %}
         <tr><td><button type="submit">submit</button></td></tr>
@@ -30,35 +30,6 @@
 
 
 {% block extra_srcipt %}
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" data-cfasync="false" ></script>
-<script data-cfasync="false">
-  var app = angular.module("App", []);
-  app.controller("AppController", function($scope) {
-    var url = "{{ call }}" ;
-      $( "input,select" ).each(function() {
-        $(this).change(function() {
-           var cdata = { 'csrfmiddlewaretoken': '{{ csrf_token }}' };
-           if($( this ).attr( "type" ) == 'checkbox'){
-             var values = '';
-             $.each($("input[name='" + $( this ).attr("name") + "']:checked"), function(){
-               console.log($(this).val())
-               values += $(this).val() + ','
-              });
-              console.log(values)
-             cdata[$( this ).attr( "name")] = values
-           }else{
-             cdata[$( this ).attr( "name") ] = $(this).val()
-            }
-            if($( this ).attr( "type" ) == 'submit'){
-               $.post( {% if pk %}"{{ pk }}"{% endif %}  , $('form').serialize() ).done(function( data ) {
-            })}
-            $.post( url + $( this ).attr( "name" )  , cdata ).done(function( data ) {
-              console.log(data)
-            });
-          });
-      })
-  })
-</script>
 
 {% get_cart_js %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
