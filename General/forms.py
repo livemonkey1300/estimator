@@ -54,21 +54,17 @@ class VOIP_Form(forms.ModelForm):
   class Meta:
     model = VOIP
     fields = (
-	'business_type',
-    'business_name',
-    'extension',
-    'locations',
-    'did_existing_local_number',
-    'did_new_local_number',
-    'fax_numbers',
-    'current_phone_provider',
-    'number_of_employees',
-    'tfs_existing_toll_free_numbers',
-    'tfs_new_toll_free_numbers',
+      'number_of_employees',
+      'phone_lines',
+      'toll_free',
+      'fax_numbers'
     )
 
     widgets = {
-            'extension' : forms.NumberInput(attrs={'type': 'range'}),
+            'number_of_employees' : forms.NumberInput(attrs={'type': 'range'}),
+            'phone_lines' : forms.NumberInput(attrs={'type': 'range'}),
+            'toll_free' : forms.NumberInput(attrs={'type': 'range'}),
+            'fax_numbers' : forms.NumberInput(attrs={'type': 'range'}),
     }
 
   def get_field(self,request=False):

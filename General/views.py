@@ -30,6 +30,13 @@ def show_email(request):
     flush = reverse('General:flush')
     return render(request, 'General/Main/mail.html', { 'quote' : cart , 'flush' : flush , 'total' :  total })
 
+# Email quote
+def send_email(request):
+    cart = request.session['saved']
+    total = request.session['total']
+    flush = reverse('General:flush')
+    return render(request, 'General/Main/mail.html', { 'quote' : cart , 'flush' : flush , 'total' :  total })
+
 
 def create_time_management(request):
     flush = reverse('General:flush')
@@ -128,6 +135,7 @@ def edit_exchange(request,pk):
 def create_voip(request):
     flush = reverse('General:flush')
     location = reverse('General:create_voip')
+    send_url = reverse('General:send_email')
     call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
     context = { 'APP' : 'VOIP' }
     if request.method == 'POST':
@@ -140,8 +148,8 @@ def create_voip(request):
           else:
             return redirect('General:index')
         else:
-          context.update( {'form': form['form'] , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  })
-          return render(request, 'General/form.html', context )
+          context.update( {'form': form['form'] , 'email': send_url, 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  })
+          return render(request, 'General/voip_calc.html', context )
     else:
         try:
           session = request.session['tmp']['VOIP']
@@ -149,8 +157,8 @@ def create_voip(request):
         except KeyError:
           form_request = VOIP_Form()
         form = form_request.get_field(request)
-        context.update( {'form': form['form'] , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  } )
-        return render(request, 'General/form.html', context )
+        context.update( {'form': form['form'] , 'email': send_url, 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  } )
+        return render(request, 'General/voip_calc.html', context )
 
 
 def edit_voip(request,pk):
