@@ -1,0 +1,14 @@
+
+<script>
+$( document ).ready(function() {
+$( "#flush" ).click(function() {
+  flush = $(this).attr( "url" )
+  $.ajax({
+    url: flush ,
+  }).done(function( data ) {
+    $( "#cart_load" ).html( data );
+  });
+});
+});
+
+</script>

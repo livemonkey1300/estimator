@@ -1,0 +1,10 @@
+
+
+{% if listing %}
+<h2>{{ Title }}</h2>
+{% for list in obj_list %}
+  {{ list.get_display }}
+{% endfor %}
+</br>
+{% endif %}
+

@@ -1,0 +1,55 @@
+
+<div class="col-sm-12 col-md-4">
+	<div class="card">
+		<div class="card-header" id='prod_list'>
+			<i class="icon s-4 icon-cart"></i> Product List
+		</div>
+		<div class="card-body productlist">
+			<p class="card-text">
+				<div class="tablewrap">
+				<table class="table shopping-cart-product " >
+				{% for i in cart %}
+				{% for k,v in i.items %}
+				<tbody id='r_table'>
+					<tr>
+						<th scope="row"><h5 class='p-3 mb-2 bg-success text-white'> {{ k }} </h5></th>
+						<td><result class='fr' >{% if v.total %}{{ v.total}} ${% endif %}</result></td>
+					</tr>
+				</tbody>
+				<tbody class="l_table" >
+					<tr>
+						<th scope="row" class='p-3 mb-2 bg-success text-white'><h5>{{ k }}</h5>
+						</th>
+						<td><button type="button" class="close dcache" aria-label="Close" dcache='{% templatetag openvariable %} item.counter {% templatetag closevariable %}'> <span aria-hidden="true">&times;</span></button></td>
+					</tr>
+					{% for key,val in v.data.items %}
+					<tr ng-repeat="record in item.data" class='recorddata' style="">
+						<th scope="row">{{ val.nice_name }}
+							<span ng-if="record.values" class="animate-if"> <span ng-repeat="manyrecord in record.values"><p>{{ val.value }}</p></span></span>
+						</th>
+						<td>
+							<span ng-if="record.values" class="animate-if"> <span ng-repeat="manyrecord in record.values"><p>{{ val.data.current }}</p></span></span>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+				{% endfor %}
+					{% endfor %}
+				</table>
+				</div>
+			</p>
+
+		</div> <!-- end of product list-->
+		<div class="row shopping-cart-list" >
+			<div class="price-label col-sm-12 col-md-6 col-lg-12">
+				<p class="cart-price-info">Total Configuration Cost:</p>
+				<p><result class='fr' >$ {{total}} <sub>/Month</sub></result></p>
+			</div>
+
+			<div class="total-price col-sm-12 col-md-12">
+					<a url="{% url 'General:flush' %}" id='flush'><button type="button" class="btn btn-primary">Empty cart</button> </a>
+					<a href="{% url 'General:show_email' %}"><button type="button" class="btn btn-primary">Show Email</button> </a>
+			</div>
+		</div>
+	</div>
+</div>

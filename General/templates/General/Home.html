@@ -1,0 +1,31 @@
+
+{% extends "./Main/index.html" %}
+
+{% block content %}
+
+<h1>{{APP}}</h1>
+
+<h2>TIME_MANAGEMENT</h2>
+{% for list in time_management.item %}
+  {{ list.get_display }}
+{% endfor %}
+
+<h2>EXCHANGE</h2>
+{% for list in exchange.item %}
+  {{ list.get_display }}
+{% endfor %}
+
+<h2>VOIP</h2>
+{% for list in voip.item %}
+  {{ list.get_display }}
+{% endfor %}
+
+<h2>VIRTUAL_MACHINE</h2>
+{% for list in virtual_machine.item %}
+  {{ list.get_display }}
+{% endfor %}
+
+
+
+{% endblock %}
+

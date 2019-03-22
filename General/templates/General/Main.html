@@ -1,0 +1,33 @@
+
+{% extends "./Main/index.html" %}
+
+{% block content %}
+{% load menu_tag %}
+<h1>{{APP}}</h1>
+
+
+
+{% get_time_management %}
+
+{% get_exchange %}
+
+{% get_voip %}
+
+{% get_virtual_machine %}
+
+
+
+<div id='cart_load' >
+{% get_cart_saved %}
+</div>
+{% endblock %}
+
+
+
+
+
+
+{% block extra_srcipt %}
+{% get_cart_js %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+{% endblock %}
