@@ -10,8 +10,14 @@
     {% load crispy_forms_tags %}
     <form method="post" action="{{ pk }}"  ng-app="App" ng-controller="AppController"  >
       {% csrf_token %}
-      <table>{{ form|crispy }}</table>
-      <button type="submit">submit</button>
+      <table>
+      {% for field in form %}
+      <tr>
+        <td>{{field.label}}</td><td>{{field}}</td>
+      </tr>
+      {% endfor %}
+        <tr><td><button type="submit">submit</button></td></tr>
+      </table>
     </form>
           <br>
   </p>
