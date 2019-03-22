@@ -149,7 +149,7 @@ def create_voip(request):
             return redirect('General:index')
         else:
           context.update( {'form': form['form'] , 'email': send_url, 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  })
-          return render(request, 'General/voip_calc.html', context )
+          return render(request, 'General/form.html', context )
     else:
         try:
           session = request.session['tmp']['VOIP']
@@ -158,7 +158,7 @@ def create_voip(request):
           form_request = VOIP_Form()
         form = form_request.get_field(request)
         context.update( {'form': form['form'] , 'email': send_url, 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  } )
-        return render(request, 'General/voip_calc.html', context )
+        return render(request, 'General/form.html', context )
 
 
 def edit_voip(request,pk):
