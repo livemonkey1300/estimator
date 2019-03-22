@@ -106,15 +106,23 @@ def get_virtual_machine(context):
   return mark_safe(render_to_string('General/TAG_TPL/list_tag.html' , content ))
 
 
-@register.filter(is_safe=True)
-def render_field(field):
+@register.simple_tag(takes_context=True)
+def render_field(context,field):
     content = { 'field' : field }
     type = field.field.widget.input_type
+    call = ''
+    csrf_token = ''
+    try:
+        call = context['call']
+        csrf_token = context['csrf_token']
+    except KeyError:
+        pass
+    content = { 'field' : field , 'call' : call , 'csrf_token' : csrf_token }
     if type == 'range':
-        return render_to_string('General/TAG_TPL/Field/Number_Slider.html' , content )
+        return mark_safe(render_to_string('General/TAG_TPL/Field/Number_Slider.html' , content ))
     if type == 'number':
-        return render_to_string('General/TAG_TPL/Field/Number_PM.html' , content )
-    return render_to_string('General/TAG_TPL/Field/default.html' , content )
+        return mark_safe(render_to_string('General/TAG_TPL/Field/Number_PM.html' , content ))
+    return mark_safe(render_to_string('General/TAG_TPL/Field/default.html' , content ))
 
 @register.simple_tag(takes_context=True)
 def get_cart_saved(context):
