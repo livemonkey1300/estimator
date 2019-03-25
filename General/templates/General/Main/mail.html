@@ -64,7 +64,7 @@
 														<td width="2%"></td>
 														<td class="alignleft" style="font-family: 'Tahoma', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.32px; color: #222222;"><span>{{ k }}</span> </td>
 														<td class="alignright" width="60%"></td>
-														<td class="alignright" style="color: #82c122; font-weight: 500; font-family: 'Tahoma', sans-serif;">$ 0</td>
+														<td class="alignright" style="color: #82c122; font-weight: 500; font-family: 'Tahoma', sans-serif;"></td>
 														<td width="2%"></td>
 													</tr>
 												</table>
@@ -75,7 +75,7 @@
 															<td width="2%"></td>
 														<td class="alignleft"  style="font-family: 'Tahoma', sans-serif; font-size: 11px; font-weight: 400; letter-spacing: 0.32px; color: #717171;">{{ val.nice_name }}</td>
 														<td class="alignright" width="60%"  style="font-family: 'Tahoma', sans-serif; font-size: 11px; font-weight: 400; letter-spacing: 0.32px; color: #717171;"> {{ val.value }} </td>
-														<td class="alignright"  style="font-family: 'Tahoma', sans-serif; font-size: 11px; font-weight: 400; letter-spacing: 0.32px; color: #717171;"> {{ val.data.current }} $ </td>
+														<td class="alignright"  style="font-family: 'Tahoma', sans-serif; font-size: 11px; font-weight: 400; letter-spacing: 0.32px; color: #717171;"> {% if not val.data.current == 0.0  %}{{ val.data.current }} $ {% endif %}</td>
 															<td width="2%"></td>
 													</tr>
 													{% endif %}

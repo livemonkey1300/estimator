@@ -55,7 +55,6 @@ class EXCHANGE(models.Model):
 
 
 class VOIP(models.Model):
-
   number_of_employees =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(2000)],verbose_name='Total users' )
   phone_lines =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(200)],verbose_name='Phone lines' )
   toll_free =  models.IntegerField(default=1,validators=[MinValueValidator(1), MaxValueValidator(50)],verbose_name='Toll-Free numbers' )
@@ -111,7 +110,3 @@ class VIRTUAL_MACHINE(models.Model):
 
   class Meta:
     verbose_name = 'Virtual Machine'
-
-
-
-

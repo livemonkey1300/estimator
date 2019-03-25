@@ -5,7 +5,7 @@ from django.http import HttpResponse
 import json
 
 from .models import TIME_MANAGEMENT ,EXCHANGE ,VOIP ,VIRTUAL_MACHINE
-from .forms import TIME_MANAGEMENT_Form ,EXCHANGE_Form ,VOIP_Form ,VIRTUAL_MACHINE_Form , MAILME
+from .forms import TIME_MANAGEMENT_Form ,EXCHANGE_Form ,VOIP_Form ,VIRTUAL_MACHINE_Form , MAILME , VOIP_Extend_Form
 
 from .json_import import update_session , get_price
 
@@ -28,8 +28,18 @@ def show_email(request):
     cart = request.session['saved']
     total = request.session['total']
     flush = reverse('General:flush')
-    form2 = MAILME()
-    return render(request, 'General/Main/mail.html', { 'quote' : cart  , 'form' : form2 , 'flush' : flush , 'total' :  total })
+    form = MAILME()
+    return render(request, 'General/Main/mail.html', { 'quote' : cart  ,  'mail_form' : form , 'flush' : flush , 'total' :  total })
+
+def mail_form(request):
+    if request.method == 'POST':
+        form = MAILME(request.POST)
+        if form.is_valid():
+            print('OK')
+        return render(request,  'General/Main/mail_form.html', { 'mail_form' : form })
+    else:
+        form = MAILME()
+    return render(request,  'General/Main/mail_form.html', { 'mail_form' : form })
 
 # Email quote
 def send_email(request):
@@ -134,16 +144,19 @@ def edit_exchange(request,pk):
 
 
 def create_voip(request):
+    print('Was Posted')
     flush = reverse('General:flush')
     location = reverse('General:create_voip')
     send_url = reverse('General:send_email')
     call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
     context = { 'APP' : 'VOIP' }
     if request.method == 'POST':
+        print('Was Posted POST')
         form_request = VOIP_Form(request.POST)
         form = form_request.get_field(request)
         if form['redirect']:
           if form['mail']:
+            print('Was Posted Mail')
             context.update( { 'quote' : form['mail_data'] , 'flush' : flush , 'total' :  get_price(request,'VOIP') } )
             return render(request, 'General/Main/mail.html', context )
           else:
@@ -161,6 +174,15 @@ def create_voip(request):
         context.update( {'form': form['form'] , 'email': send_url, 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  } )
         return render(request, 'General/voip_calc.html', context )
 
+def create_voip_extend(request):
+    flush = reverse('General:flush')
+    location = reverse('General:create_voip_extend')
+    send_url = reverse('General:send_email')
+    call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
+    form_request = VOIP_Extend_Form()
+    form = form_request.get_field(request)
+    context = {'form': form['form'] , 'email': send_url, 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  }
+    return render(request, 'General/voip_extend.html', context )
 
 def edit_voip(request,pk):
   if request.user.is_authenticated:

@@ -318,7 +318,6 @@ header.sticky a {
 
 .signup-form form , .signup-form .card {
     padding-left: 0;
-    max-width: 440px;
 }
 
  .signup-form .card {
@@ -329,12 +328,12 @@ header.sticky a {
 .signup-form .card  td {
     line-height: 2em;
     font-size: 17px;
+        text-align: left;
 }
 
 .card-header {
     font-size: 20px;
     text-align: left;
-    padding-left: 40px !important;
 }
 
 
@@ -435,4 +434,24 @@ header.sticky a {
     transition: color 0.2s 0.3s, width 0.3s 0s;
     margin-top: 79px;
     margin-bottom: 47px;
+}
+
+#change_estimate_div {
+  width: 10%;
+  min-width: 250px;
+  background: #000;
+  margin-left: -1%;
+      margin-top: -1%;
+}
+
+#change_estimate_div input {
+      max-width: 200px;
+      max-height: 30px;
+      margin-bottom: 10px;
+      margin-left: 50px;
+      font-size: initial;
+}
+
+div#estimate_mail{
+  margin-top: 0px
 }

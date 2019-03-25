@@ -25,7 +25,7 @@ PRICE_TABLE = {
   'mailbox' :  { 'price' : 3.0 },
   'office_license' :  { 'price' : 1.5 },
   'current_email_provider' :  { 'price' : 0.0 },
-  'number_of_employees' :  { 'price' : 0.0 },
+  'number_of_employees' :  { 'price' : 10.0 },
   'average_size_of_mailbox' : {
   '5 GB' :  3.0 ,
   '10 GB' :  5.0 ,
@@ -130,7 +130,7 @@ BUSINESS_TYPE_CHOICE = (
   ( 'Technology' , 'Technology' ),
   )
 
-  
+
 AVERAGE_SIZE_OF_MAILBOX_CHOICE = (
   ( '5 GB' , '5 GB' ),
   ( '10 GB' , '10 GB' ),
@@ -139,13 +139,13 @@ AVERAGE_SIZE_OF_MAILBOX_CHOICE = (
   ( '75 GB' , '75 GB' ),
   )
 
-  
+
 MIGRATION_REQUIRED_CHOICE = (
   ( 'No' , 'No' ),
   ( 'Yes' , 'Yes' ),
   )
 
-  
+
 
 BUSINESS_TYPE_CHOICE = (
   ( 'Automotive' , 'Automotive' ),
@@ -157,7 +157,7 @@ BUSINESS_TYPE_CHOICE = (
   ( 'Technology' , 'Technology' ),
   )
 
-  
+
 
 DATACENTER_CHOICE = (
   ( 'Brasilia, Brasil' , 'Brasilia, Brasil' ),
@@ -170,7 +170,7 @@ DATACENTER_CHOICE = (
   ( 'Vancouver, BC' , 'Vancouver, BC' ),
   )
 
-  
+
 OPERATING_SYSTEM_CHOICE = (
   ( 'Debian' , 'Debian' ),
   ( 'Ubuntu' , 'Ubuntu' ),
@@ -180,19 +180,19 @@ OPERATING_SYSTEM_CHOICE = (
   ( 'Windows Server' , 'Windows Server' ),
   )
 
-  
+
 SYSTEM_DISK_CHOICE = (
   ( 'SSD ENT Disk' , 'SSD ENT Disk' ),
   ( 'HDD SAS Disk' , 'HDD SAS Disk' ),
   )
 
-  
+
 DATA_DISK_CHOICE = (
   ( 'SSD ENT Disk' , 'SSD ENT Disk' ),
   ( 'HDD SAS Disk' , 'HDD SAS Disk' ),
   )
 
-  
+
 MEMORY_CHOICE = (
   ( '2 GB' , '2 GB' ),
   ( '4 GB' , '4 GB' ),
@@ -212,16 +212,16 @@ MEMORY_CHOICE = (
   ( '32 GB' , '32 GB' ),
   )
 
-  
+
 VCPU_CHOICE = (
   ( '2 vCPU' , '2 vCPU' ),
   ( '4 vCPU' , '4 vCPU' ),
   ( '6 vCPU' , '6 vCPU' ),
   )
 
-  
-  
-  
+
+
+
 
 
 
@@ -290,9 +290,20 @@ def tmp_session(request,form_name,current_form):
 
 def set_session(form_reference , request=False,form_name=False):
     fields = []
+    request.session.modified = True
     current_user = request.user
+    try:
+        if request.session['saved']:
+            print('ok')
+        if request.session['total']:
+            print('ok')
+    except KeyError:
+        request.session['saved'] = []
+        request.session['total'] = 0
     if request.method == 'POST':
+      print('Is Posted')
       if form_reference.is_valid():
+        print('Is Valid')
         current_form = form_reference.cleaned_data
         current_fields = {}
         current_fields_print = {}
@@ -303,7 +314,10 @@ def set_session(form_reference , request=False,form_name=False):
           current_fields_print[key] = { 'value' : value , 'data' : ajax['data'] , 'nice_name' : form_reference.fields[key].label }
         try:
             cache = request.session['saved']
-            cache.append({ form_name : { 'post' : current_fields , 'data' : current_fields_print , 'total' : get_price(request,form_name) } })
+            if form_name == 'VOIP':
+                cache[0] = { form_name : { 'post' : current_fields , 'data' : current_fields_print , 'total' : get_price(request,form_name) } }
+            else:
+                cache.append({ form_name : { 'post' : current_fields , 'data' : current_fields_print , 'total' : get_price(request,form_name) } })
             get_total(request)
             tmp_session(request,form_name,current_form)
         except Exception as e:
@@ -316,6 +330,7 @@ def set_session(form_reference , request=False,form_name=False):
         else:
             return { 'redirect' : True , 'mail' : True , 'mail_data' : request.session['saved'] }
       else:
+        print('Is NOT Valid %s' % form_reference.errors)
         if current_user.is_authenticated:
             return { 'form' : form_reference , 'redirect' : False , 'mail' : False }
         return { 'form' : form_reference , 'redirect' : False }

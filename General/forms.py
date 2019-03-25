@@ -12,10 +12,10 @@ from .json_import import set_session
 
 
 class MAILME(forms.Form):
-    your_name = forms.CharField(label='Your name', max_length=100)
-    last_name = forms.CharField(label='last name', max_length=100)
-    email = forms.CharField(label='email', max_length=100)
-
+    your_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'First name'}),required=True)
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Last name'}),required=True)
+    email = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'your@email.com'}),required=True)
+    tel = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Phone Number'}),required=False)
 
 class TIME_MANAGEMENT_Form(forms.ModelForm):
   class Meta:
@@ -67,10 +67,34 @@ class VOIP_Form(forms.ModelForm):
     )
 
     widgets = {
-            'number_of_employees' : forms.NumberInput(attrs={'type': 'range'}),
-            'phone_lines' : forms.NumberInput(attrs={'type': 'range'}),
-            'toll_free' : forms.NumberInput(attrs={'type': 'range'}),
-            'fax_numbers' : forms.NumberInput(attrs={'type': 'range'}),
+            'number_of_employees' : forms.NumberInput(attrs={'type': 'range' , 'min' : 1 , 'max' : 2000 }),
+            'phone_lines' : forms.NumberInput(attrs={'type': 'range'  , 'min' : 1 , 'max' : 200 }),
+            'toll_free' : forms.NumberInput(attrs={'type': 'range'  , 'min' : 1 , 'max' : 50 }),
+            'fax_numbers' : forms.NumberInput(attrs={'type': 'range'  , 'min' : 1 , 'max' : 20 }),
+    }
+
+  def get_field(self,request=False):
+      if request:
+        return set_session(self,request,'VOIP')
+      else:
+        return { 'success' : False }
+
+class VOIP_Extend_Form(forms.ModelForm):
+  class Meta:
+    model = VOIP
+    fields = (
+      'extension',
+      'locations',
+      'did_new_local_number',
+      'current_phone_provider',
+      'tfs_new_toll_free_numbers',
+    )
+
+    widgets = {
+            'extension' : forms.NumberInput(attrs={'type': 'range' , 'min' : 1 , 'max' : 1000 }),
+            'locations' : forms.NumberInput(attrs={'type': 'range'  , 'min' : 1 , 'max' : 100 }),
+            'tfs_new_toll_free_numbers' : forms.NumberInput(attrs={'type': 'range'  , 'min' : 1 , 'max' : 50 }),
+            'did_new_local_number' : forms.NumberInput(attrs={'type': 'range'  , 'min' : 1 , 'max' : 50 }),
     }
 
   def get_field(self,request=False):

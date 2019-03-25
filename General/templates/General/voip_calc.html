@@ -20,27 +20,26 @@
 	<title>Morphing Modal Window | CodyHouse</title>
   <style>
       @import url('https://fonts.googleapis.com/css?family=Khula:400,700');
-      .button-strip {
-
-          top: 0px;
-          left: 0px;
-          width: 400px;
-          height: 75px;
-          border: 2px solid #1496BD;
-          border-radius: 3px;
-          display: flex;
-      }
-      .strip-button {
-          background-color: white;
-          color: #1496BD;
-          width: 50%;
-          height: 100%;
-          text-align: center;
-          vertical-align: middle;
-          line-height: 65px;
-          transition: background-color .4s linear, color .2s linear;
-          cursor: pointer;
-      }
+			.button-strip {
+			    top: 0px;
+			    left: 0px;
+			    width: 400px;
+			    height: 25px;
+			    border: 2px solid #a8d465;
+			    border-radius: 3px;
+			    display: flex;
+			}
+			.strip-button {
+			    background-color: white;
+			    color: #a8d465;
+			    width: 50%;
+			    height: 21px;
+			    text-align: center;
+			    vertical-align: middle;
+			    line-height: 16px;
+			    transition: background-color .4s linear, color .2s linear;
+			    cursor: pointer;
+			}
       .strip-button span {
           color: inherit;
       }
@@ -48,29 +47,75 @@
           font-family: 'Khula', sans-serif;
           font-weight: 400;
           font-size: 16px;
-          color: #1496BD;
+          color: #a8d465;
           margin: 0px;
           padding: 0px;
       }
       .active-strip-button {
-          background-color: #1496BD;
+          background-color: #a8d465;
           color: white;
       }
+			#change_estimate_div .btn {
+			    /* width: 55%; */
+			    /* border-radius: 0.5em; */
+			    color: #82c122;
+			    /* white-space: nowrap; */
+			    font-size: 16px;
+			    font-weight: 500;
+			    -webkit-font-smoothing: antialiased;
+			    -moz-osx-font-smoothing: grayscale;
+			    -webkit-transition: color 0.2s 0.3s, width 0.3s 0s;
+			    -moz-transition: color 0.2s 0.3s, width 0.3s 0s;
+			    transition: color 0.2s 0.3s, width 0.3s 0s;
+			    margin-top: 13px;
+			    margin-bottom: 13px;
+					background: black;
+			}
+			#change_estimate_div {
+			border-radius: 0px 0px 4px 0px;
+		}
+		.signup-form table {
+    width: 100%;
+		}
+		.signup-form .btn {
+		    border-color: #fff;
+		}
+		button.input_calc {
+	width: 30px!important;
+	border: 1px solid #c3c5c6;
+	height: 42px!important;
+
+}
+
+button.input_calc:hover {
+	border: 1px solid #82c122;
+	background: #d5ecb1;
+}
+
+i.icon-plus {
+	font-size: 16px;
+}
+i.icon-minus {
+	font-size: 16px!important;
+}
+a#advance{
+    float: left;
+}
+
   </style>
 </head>
 <body>
 	<header class="sticky">
 		<a class="rootLink item-home colorize" href="https://dnsnetworks.ca/"><img src="https://dnsnetworks.ca//wp-content/uploads/2018/08/whitelogo.svg" width="200px"></a>
-		<div class="cd-modal-action" id="change_estimate">
-			<a href="#0" class="btn" data-type="modal-trigger">Change Your Estimate</a>
-			<span class="cd-modal-bg"></span>
+		<div id="change_estimate_div" style="display:none;" >
+			<button class="btn" id='estimate'>Change Your Estimate</button>
 		</div>
 	</header>
 
 	<section class="cd-section">
 		<p>
 			<div class="rates-table col" id='start_text'>
-	<h3><strong>Start making calls get your estimate </strong>  under 5 minutes!</h3>
+	<h3><strong>Get your estimate </strong>  under 5 minutes!</h3>
 	</div>
 		</p>
   {% load menu_tag %}
@@ -83,17 +128,19 @@
 		<iframe id="quote_data" src="" width="100%" height="0px" style="display:none;"></iframe>
 		<div class="cd-modal">
 			<div class="cd-modal-content">
-        <div class="signup-form">
-					<h2>Start making calls <strong>in under 5 minutes!</strong></h2><br><br>
+				<div class="card signup-form">
+				<h2>Get your estimate<strong></strong></h2><br><br>
+        <div class="row">
+<div class="col-sm" id='estimate_mail_current' >
 	<div class="card">
   <div class="card-header">
-    Total<span id='price'></span>
+    Total<span id='price'></span><button id="save" class="btn btn-primary" style="float: right;">Get My Quote</button><div id="content" style="float: right;"></div>
   </div>
   <div class="card-body">
     <h5 class="card-title"></h5>
     <p class="card-text">
       {% load crispy_forms_tags %}
-        <form method="post" ng-app="App" ng-controller="AppController"  >
+        <form method="post" id="voip_post" ng-app="App" ng-controller="AppController"  >
           {% csrf_token %}
           <table>
           {% for field in form %}
@@ -104,10 +151,19 @@
           </table>
 
         </form>
-      </p>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
+				<button class="btn btn-primary" id='advance'>
+			    Advanced Options
+			  </button>
+				<br>
+				<br>
+				<div id="advance_toggle" isload=False>
+  <div class="card card-body">
+    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
   </div>
-  <div id="content"></div>
+				</div>
+      </p>
+  </div>
+
   <script type="text/javascript" src="{% static 'General/buttonstrip.min.js' %}"></script>
   <script>
       var bs1 = new ButtonStrip({
@@ -127,13 +183,27 @@
 
 
   <p style="display:none;">This is a test form</p>
-  <button id="expand">Advanced Options</button>
   <br>
-  <button id='send' class="btn btn-primary">Send</button>
+
+</div>
+</div>
+<div class="col-sm-4" id='estimate_mail' style="display:none;" >
+<div class="card">
+	<div class="card-header">
+		<button class="btn btn-primary" id='send_estimate'>Send my estime</button>
+		<button class="btn btn-primary">Send and contact me</button>
+	</div>
+	<div class="card-body">
+    <h5 class="card-title"></h5>
+    <p class="card-text">
+			<div id="change_estimate_form" style="display:none;"></div>
+      </p>
+  </div>
+</div>
 </div>
 
 </div>
-
+</div>
 
 
 			</div> <!-- cd-modal-content -->
@@ -147,19 +217,35 @@
 <script  type="text/javascript" data-cfasync="false">
 
 $(function() {
-	$('#change_estimate').hide()
-	$('#send').click( function()  {
-		$('#change_estimate').show()
+	$('#save').click( function()  {
+		$('#change_estimate_div').show()
+		$('#change_estimate_form,#estimate_mail').show()
+		$('#estimate_mail_current').attr('class','col-sm-8')
 		$('#new_estimate').hide()
 		$('#start_text').hide()
-		$.post( {% if pk %}"{{ pk }}"{% endif %}  , $('form').serialize() ).done(function() {
+		$.post( {% if pk %}"{{ pk }}"{% endif %}  , $('#voip_post').serialize() ).done(function() {
 			 $('#quote_data').attr('src', "{% url 'General:show_email' %}").attr('style', '' ).attr('width', '100%' ).attr('height', '1000px' );
+			 $( "#change_estimate_form" ).load( "{% url 'General:mail_form' %}" );
 				})
+		$(this).hide()
 			})
-		$('#change_estimate').click( function()  {
-			$('.cd-section').addClass('modal-is-visible').end().off('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend')
+		$('#send_estimate').click( function()  {
+			$.post( "{% url 'General:mail_form' %}" , $('#voip_mail').serialize()).done(function(data) {
+				alert('post')
+				$( "#change_estimate_form" ).html(data)
+			})
 		})
-	})
+		$('#advance').click( function( )  {
+			$( "#advance_toggle" ).load( "{% url 'General:create_voip_extend' %}" );
+			$( window ).trigger('load');
+			});
+		})
+		$( window ).on( "load", function() {
+        console.log( "window loaded" );
+				$('#estimate').click( function()  {
+					$('[data-type="modal-trigger"]').trigger('click')
+				})
+    });
 </script>
 </body>
 </html>
