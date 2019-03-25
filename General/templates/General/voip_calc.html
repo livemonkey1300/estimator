@@ -9,11 +9,12 @@
 
 	<link rel="stylesheet" href="{% static 'General/css/reset.css' %}"> <!-- CSS reset -->
 	<link rel="stylesheet" href="{% static 'General/css/style.css' %}"> <!-- Resource style -->
+  <link rel="stylesheet" href="{% static 'General/css/Field.css' %}"
 	<script src="{% static 'General/js/modernizr.js' %}"></script> <!-- Modernizr -->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" data-cfasync="false" ></script>
   <script type="text/javascript" src="{% static 'General/buttonstrip.min.js' %}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<title>Morphing Modal Window | CodyHouse</title>
@@ -58,28 +59,38 @@
   </style>
 </head>
 <body>
-	<header>
-		<h1>Morphing Modal Window</h1>
+	<header class="sticky">
+		<a class="rootLink item-home colorize" href="https://dnsnetworks.ca/"><img src="https://dnsnetworks.ca//wp-content/uploads/2018/08/whitelogo.svg" width="200px"></a>
+		<div class="cd-modal-action" id="change_estimate">
+			<a href="#0" class="btn" data-type="modal-trigger">Change Your Estimate</a>
+			<span class="cd-modal-bg"></span>
+		</div>
 	</header>
 
 	<section class="cd-section">
 		<p>
-			Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non ipsum repudiandae sequi ut optio reiciendis consectetur, cum, a provident, iusto quod esse, perferendis iure iste! Quidem itaque, exercitationem aliquam, mollitia recusandae repellat dolores quibusdam minima quae reprehenderit ut, reiciendis officia.
+			<div class="rates-table col" id='start_text'>
+	<h3><strong>Start making calls get your estimate </strong>  under 5 minutes!</h3>
+	</div>
 		</p>
   {% load menu_tag %}
-		<div class="cd-modal-action">
-			<a href="#0" class="btn" data-type="modal-trigger">Fire Modal Window</a>
+
+		<div class="cd-modal-action" >
+			<a href="#0" class="btn" data-type="modal-trigger"  id="new_estimate" >Get Your Estimate Now</a>
 			<span class="cd-modal-bg"></span>
 		</div> <!-- cd-modal-action -->
-
+<!-- cd-modal-action -->
+		<iframe id="quote_data" src="" width="100%" height="0px" style="display:none;"></iframe>
 		<div class="cd-modal">
 			<div class="cd-modal-content">
-        <div class="card">
+        <div class="signup-form">
+					<h2>Start making calls <strong>in under 5 minutes!</strong></h2><br><br>
+	<div class="card">
   <div class="card-header">
-    VOIP
+    Total<span id='price'></span>
   </div>
   <div class="card-body">
-    <h5 class="card-title">Total<span id='price'></span></h5>
+    <h5 class="card-title"></h5>
     <p class="card-text">
       {% load crispy_forms_tags %}
         <form method="post" ng-app="App" ng-controller="AppController"  >
@@ -118,7 +129,9 @@
   <p style="display:none;">This is a test form</p>
   <button id="expand">Advanced Options</button>
   <br>
-  <button>Send</button>
+  <button id='send' class="btn btn-primary">Send</button>
+</div>
+
 </div>
 
 
@@ -131,5 +144,22 @@
 <script src="{% static 'General/js/jquery-2.1.1.js' %}"></script>
 <script src="{% static 'General/js/velocity.min.js' %}"></script>
 <script src="{% static 'General/js/main.js' %}"></script> <!-- Resource jQuery -->
+<script  type="text/javascript" data-cfasync="false">
+
+$(function() {
+	$('#change_estimate').hide()
+	$('#send').click( function()  {
+		$('#change_estimate').show()
+		$('#new_estimate').hide()
+		$('#start_text').hide()
+		$.post( {% if pk %}"{{ pk }}"{% endif %}  , $('form').serialize() ).done(function() {
+			 $('#quote_data').attr('src', "{% url 'General:show_email' %}").attr('style', '' ).attr('width', '100%' ).attr('height', '1000px' );
+				})
+			})
+		$('#change_estimate').click( function()  {
+			$('.cd-section').addClass('modal-is-visible').end().off('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend')
+		})
+	})
+</script>
 </body>
 </html>
