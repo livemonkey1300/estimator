@@ -1,10 +1,10 @@
 {% load widget_tweaks %}
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" data-cfasync="false">
-$( document ).ready(function() {
+<input type="hidden" get='{{ field.html_name}}' register='{{ field.value }}' call='{{call}}' >
+<div class="selectstyle">{% render_field field %}</div>
+<script type="text/javascript" data-cfasync="false">
+$(function() {
   $("#id_{{ field.html_name}}").change( function() {
     $( "[get='{{ field.html_name }}']" ).attr( "register" , $(this).val() )
   })
 })
 </script>
-<input type="hidden" get='{{ field.html_name}}' register='{{ field.value }}' call='{{call}}' >
-<div class="selectstyle">{% render_field field %}</div>

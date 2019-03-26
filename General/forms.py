@@ -4,7 +4,7 @@ from django.forms import ModelForm
 from .models import TIME_MANAGEMENT ,EXCHANGE ,VOIP ,VIRTUAL_MACHINE
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-
+from phone_field import PhoneWidget
 
 
 from .json_import import set_session
@@ -14,8 +14,8 @@ from .json_import import set_session
 class MAILME(forms.Form):
     your_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'First name'}),required=True)
     last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Last name'}),required=True)
-    email = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'your@email.com'}),required=True)
-    tel = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Phone Number'}),required=False)
+    email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'your@email.com'}),required=True)
+    tel = forms.CharField(widget=PhoneWidget(attrs={'placeholder': 'Phone Number'}),required=False)
 
 class TIME_MANAGEMENT_Form(forms.ModelForm):
   class Meta:

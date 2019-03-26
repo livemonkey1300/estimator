@@ -45,15 +45,21 @@
 								<tr>
 									<td class="content-block aligncenter">
 										<table class="invoice" style="font-family: 'Tahoma', sans-serif; width: 100%;">
+											{% if first_name %}
 											<tr style="font-family: 'Tahoma', sans-serif; font-size: 11px; color: #0d0d0d;">
 												<td><p class="userdetails" style="font-size: 10px; color: gray;">Quote activity from:
-													{{ user.get_username }}
+													{{ first_name }} {{ last_name }}
 												{{ ip }}
 											{% now "jS F Y H:i" %}</p>
-													Hello <span style="font-weight: 800; color: #0d0d0d;">{{ user.get_username }},</span>
-													<br>Please see your quote below:
+
+													Hello <span style="font-weight: 800; color: #0d0d0d;">	{{ first_name }} {{ last_name }}</span><br>
+													<span style="font-weight: 800; color: #0d0d0d;">	{{ email }} </span><br>
+													<span style="font-weight: 800; color: #0d0d0d;">	{{ telephone.0 }} {{ telephone.1 }}</span><br>
+													<br>Please see your estimate below:
+
 												</td>
 											</tr>
+											{% endif %}
 											{% for i in quote %}
 											{% for k,v in i.items %}
 											<tr style="font-family: 'Tahoma', sans-serif;">

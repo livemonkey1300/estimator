@@ -7,7 +7,8 @@ import json
 from .models import TIME_MANAGEMENT ,EXCHANGE ,VOIP ,VIRTUAL_MACHINE
 from .forms import TIME_MANAGEMENT_Form ,EXCHANGE_Form ,VOIP_Form ,VIRTUAL_MACHINE_Form , MAILME , VOIP_Extend_Form
 
-from .json_import import update_session , get_price
+from .json_import import update_session , get_price , get_extended , set_rebate
+from .mail_quote  import Mailer
 
 def index(request):
   context = {}
@@ -31,10 +32,14 @@ def show_email(request):
     form = MAILME()
     return render(request, 'General/Main/mail.html', { 'quote' : cart  ,  'mail_form' : form , 'flush' : flush , 'total' :  total })
 
+
+
 def mail_form(request):
     if request.method == 'POST':
         form = MAILME(request.POST)
         if form.is_valid():
+            mail_form = Mailer(request,form)
+            mail_form.send()
             print('OK')
         return render(request,  'General/Main/mail_form.html', { 'mail_form' : form })
     else:
@@ -47,6 +52,10 @@ def send_email(request):
     total = request.session['total']
     flush = reverse('General:flush')
     return render(request, 'General/Main/mail.html', { 'quote' : cart , 'flush' : flush , 'total' :  total })
+
+
+def discount(request,form_name='VOIP'):
+    return HttpResponse(json.dumps(set_rebate(request,form_name)), content_type="application/json")
 
 
 def create_time_management(request):
@@ -143,7 +152,7 @@ def edit_exchange(request,pk):
     return redirect('General:index')
 
 
-def create_voip(request):
+def create_voip(request,extend=False):
     print('Was Posted')
     flush = reverse('General:flush')
     location = reverse('General:create_voip')
@@ -151,9 +160,12 @@ def create_voip(request):
     call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
     context = { 'APP' : 'VOIP' }
     if request.method == 'POST':
-        print('Was Posted POST')
+        print('Was Posted POST %s' % request.POST)
         form_request = VOIP_Form(request.POST)
-        form = form_request.get_field(request)
+        form = get_extended(request,form_request,'VOIP')
+        if extend:
+            form_request2 = VOIP_Extend_Form(request.POST)
+            form = get_extended(request,form_request,'VOIP',form_request2)
         if form['redirect']:
           if form['mail']:
             print('Was Posted Mail')

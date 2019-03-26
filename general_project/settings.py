@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'General.apps.GeneralConfig',
     'crispy_forms',
     'widget_tweaks',
+    'phone_field',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -119,6 +121,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.mailstratus.ca'
+EMAIL_HOST_USER = 'dnsapprelay'
+EMAIL_HOST_PASSWORD = 'Supp0rtt34m!'
+EMAIL_PORT = 587
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/

@@ -14,7 +14,6 @@
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   <script type="text/javascript" src="{% static 'General/buttonstrip.min.js' %}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<title>Morphing Modal Window | CodyHouse</title>
@@ -101,7 +100,19 @@ i.icon-minus {
 a#advance{
     float: left;
 }
-
+#voip_mail input , #voip_mail span.text-danger{
+	width: 80%;
+	margin-left: 10%;
+	margin-bottom: 10px;
+}
+#voip_mail span.text-danger {
+    font-size: 10px;
+}
+.tr-danger td {
+	max-height: 16px;
+	height: 16px;
+	line-height: 1px !important;
+}
   </style>
 </head>
 <body>
@@ -134,50 +145,67 @@ a#advance{
 <div class="col-sm" id='estimate_mail_current' >
 	<div class="card">
   <div class="card-header">
-    Total<span id='price'></span><button id="save" class="btn btn-primary" style="float: right;">Get My Quote</button><div id="content" style="float: right;"></div>
+    Total<span id='price'></span><span id='saving'></span><button id="save" class="btn btn-primary" style="float: right;">Get My Quote</button><div id="content" style="float: right;"></div>
   </div>
   <div class="card-body">
     <h5 class="card-title"></h5>
     <p class="card-text">
       {% load crispy_forms_tags %}
-        <form method="post" id="voip_post" ng-app="App" ng-controller="AppController"  >
+			<table>
+        <form method="post" id="voip_post" call={% if pk %}"{{ pk }}"{% endif %}>
+					<tbody>
           {% csrf_token %}
-          <table>
           {% for field in form %}
           <tr>
             <td>{{field.label}}</td><td>{% render_field field %}</td>
           </tr>
           {% endfor %}
-          </table>
+					</tbody>
+					<tbody>
+					<tr>
+						<td><span class="btn btn-primary" id='advance'>Advanced Options</span></td><td></td>
+					</tr>
+					</tbody>
+					<tbody id="advance_toggle" >
+					</tbody>
+        	</form>
+				</table>
+				<div id='results'></div>
+				<br>
+				<br>
 
-        </form>
-				<button class="btn btn-primary" id='advance'>
-			    Advanced Options
-			  </button>
-				<br>
-				<br>
-				<div id="advance_toggle" isload=False>
-  <div class="card card-body">
-    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-  </div>
-				</div>
       </p>
   </div>
 
   <script type="text/javascript" src="{% static 'General/buttonstrip.min.js' %}"></script>
   <script>
+	function set_price(total, saving) {
+					$("#price").text('   '+ total + ' $' )
+				if (saving!= 0) {
+					$("#saving").text('  Saving ( '+ saving + ' $ )')
+				}else{
+					$("#saving").text(' ')
+				}
+			}
+
       var bs1 = new ButtonStrip({
           id: 'buttonStrip1'
       });
       bs1.addButton("Month-To-Month", true, 'click', function(){
-          console.log('Hallo Welt!');
+					$.get("{% url 'General:discount' %}", { discount: 1 } , function( data ) {
+						set_price(data.total , data.saving)
+					});
       });
       bs1.addButton("1 Year (Save 10%)", false, 'click', function(){
-          console.log('Test');
+				$.get("{% url 'General:discount' %}", { discount: 2 } , function( data ) {
+					set_price(data.total , data.saving)
+				});
       });
-      bs1.addButton("3 Year (Save 10%)", false, 'click', function(){
-          console.log('Test');
-      });
+      bs1.addButton("3 Year (Save 15%)", false, 'click', function(){
+				$.get("{% url 'General:discount' %}", { discount: 3 } , function( data ) {
+						set_price(data.total , data.saving)
+							});
+				});
       bs1.append('#content');
   </script>
 
@@ -191,13 +219,12 @@ a#advance{
 <div class="card">
 	<div class="card-header">
 		<button class="btn btn-primary" id='send_estimate'>Send my estime</button>
-		<button class="btn btn-primary">Send and contact me</button>
+		<button class="btn btn-primary" id='send_estimate_contact' >Send and contact me</button>
+		<button class="btn btn-primary" id='preview'>Preview</button>
 	</div>
 	<div class="card-body">
     <h5 class="card-title"></h5>
-    <p class="card-text">
 			<div id="change_estimate_form" style="display:none;"></div>
-      </p>
   </div>
 </div>
 </div>
@@ -216,28 +243,56 @@ a#advance{
 <script src="{% static 'General/js/main.js' %}"></script> <!-- Resource jQuery -->
 <script  type="text/javascript" data-cfasync="false">
 
-$(function() {
+function get_extend() {
+		 var array = $("#advance_toggle").find('input,select').serializeArray();
+		 return array
+}
+
+function post_request() {
+	var url =  $('#voip_post').attr( "call" )
+	var data = $('#voip_post').serializeArray()
+	$.each(get_extend(), function( index, value ) {
+		data.push({ name : value.name , value : value.value  })
+	});
+	$.post( url  , data ).done(function() {
+		 $('#quote_data').attr('src', "{% url 'General:show_email' %}").attr('style', '' ).attr('width', '100%' ).attr('height', '1000px' );
+		 $( "#change_estimate_form" ).load( "{% url 'General:mail_form' %}" );
+	})
+}
+
+
+$( window ).on( "load", function() {
 	$('#save').click( function()  {
 		$('#change_estimate_div').show()
 		$('#change_estimate_form,#estimate_mail').show()
 		$('#estimate_mail_current').attr('class','col-sm-8')
 		$('#new_estimate').hide()
 		$('#start_text').hide()
-		$.post( {% if pk %}"{{ pk }}"{% endif %}  , $('#voip_post').serialize() ).done(function() {
-			 $('#quote_data').attr('src', "{% url 'General:show_email' %}").attr('style', '' ).attr('width', '100%' ).attr('height', '1000px' );
-			 $( "#change_estimate_form" ).load( "{% url 'General:mail_form' %}" );
-				})
+		post_request()
 		$(this).hide()
 			})
+		})
+
+
+
+$(function() {
 		$('#send_estimate').click( function()  {
 			$.post( "{% url 'General:mail_form' %}" , $('#voip_mail').serialize()).done(function(data) {
-				alert('post')
 				$( "#change_estimate_form" ).html(data)
 			})
 		})
+		$('#send_estimate_contact').click( function()  {
+			$.post( "{% url 'General:mail_form' %}" , $('#voip_mail').serialize()).done(function(data) {
+				$( "#change_estimate_form" ).html(data)
+			})
+		})
+		$('#preview').click( function()  {
+			post_request()
+			$('.cd-modal-close').trigger('click')
+		})
 		$('#advance').click( function( )  {
-			$( "#advance_toggle" ).load( "{% url 'General:create_voip_extend' %}" );
-			$( window ).trigger('load');
+			$( "#advance_toggle" ).load( "{% url 'General:create_voip_extend' %}" )
+			 $('#voip_post').attr( "call" ,"{% url 'General:create_voip' 'extend' %}"  )
 			});
 		})
 		$( window ).on( "load", function() {

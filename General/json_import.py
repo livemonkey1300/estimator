@@ -224,6 +224,28 @@ VCPU_CHOICE = (
 
 
 
+def set_rebate(request,form_name):
+    request.session.modified = True
+    discount = request.GET.get('discount')
+    print(discount)
+    if int(discount) == 1:
+        request.session['discount'] = { 'quantity' : 1 , 'price' :  1.0 }
+    if int(discount) == 2:
+        request.session['discount'] = { 'quantity' : 12 , 'price' :  0.90 }
+    if int(discount) == 3:
+        request.session['discount'] = { 'quantity' : 36 , 'price' : 0.85 }
+    print(request.session['discount'])
+    total = get_price(request,form_name)
+    save_total = request.session['discount']['save']
+    return { 'success' : True , 'total'  : total , 'saving' : save_total }
+
+def get_rebate(request):
+    try:
+        return request.session['discount']
+    except KeyError:
+        request.session.modified = True
+        request.session['discount'] = { 'quantity' : 1 , 'price' :  1.0 }
+        return request.session['discount']
 
 
 
@@ -268,7 +290,9 @@ def get_price(request,form_name):
   total = 0
   for key , val in session.items():
       total += float(val['current'])
-  return total
+  discount = get_rebate(request)
+  discount['save'] =  round(float(total * discount['quantity']) - float(total * discount['quantity'] *  discount['price']) , 2)
+  return round(total * discount['quantity'] *  discount['price'] , 2)
 
 
 def get_total(request):
@@ -296,7 +320,7 @@ def set_session(form_reference , request=False,form_name=False):
         if request.session['saved']:
             print('ok')
         if request.session['total']:
-            print('ok')
+            request.session['total'] = 0
     except KeyError:
         request.session['saved'] = []
         request.session['total'] = 0
@@ -345,6 +369,46 @@ def set_session(form_reference , request=False,form_name=False):
     return { 'form' : form_reference , 'redirect' : False }
 
 
+def check_form_reference(request,form,form_name):
+    if request.method == 'POST':
+         if form.is_valid():
+             current_form = form.cleaned_data
+             current_fields = {}
+             current_fields_print = {}
+             for key , value in current_form.items():
+                field = { 'initial' : value , 'name' : key , 'type' : form.fields[key].widget.input_type }
+                ajax = init_session(request,form_name,field)
+                current_fields[key] = value
+                current_fields_print[key] = { 'value' : value , 'data' : ajax['data'] , 'nice_name' : form.fields[key].label }
+    return { 'post' : current_fields , 'data' : current_fields_print }
+
+def get_extended(request,form1,form_name,form2=False):
+    request.session.modified = True
+    main = { 'post' : {} , 'data' : {} }
+    if not form2:
+        request.session[form_name] = {}
+    form_ref1 = check_form_reference(request,form1,form_name)
+    main['post'].update( form_ref1['post'] )
+    main['data'].update( form_ref1['data'] )
+    if form2:
+        form_ref2 = check_form_reference(request,form2,form_name)
+        main['post'].update( form_ref2['post'] )
+        main['data'].update( form_ref2['data'] )
+    try:
+        cache = request.session['saved']
+        if form_name == 'VOIP':
+            cache[0] = { form_name : { 'post' : main['post'] , 'data' : main['data'] , 'total' : get_price(request,form_name) } }
+        else:
+            cache.append({ form_name : { 'post' : main['post'] , 'data' : main['data'] , 'total' : get_price(request,form_name) } })
+        get_total(request)
+        tmp_session(request,form_name,main['post'])
+    except Exception as e:
+        request.session['saved'] = [ { form_name : { 'post' : main['post'] , 'data' : main['data'] ,  'total' : get_price(request,form_name) }} ]
+        get_total(request)
+        tmp_session(request,form_name,main['post'])
+    return { 'redirect' : True , 'mail' : True , 'mail_data' : request.session['saved'] }
+
+
 def update_session(request,form_name=False,field=False):
     remove = False
     if request.method == 'POST' and field and form_name :
@@ -384,4 +448,6 @@ def update_session(request,form_name=False,field=False):
          session[field]['current'] = float(session[field]['value']) *  session[field]['price']
       except Exception as e:
          session[field]['current'] = session[field]['price'] *  1
-    return { 'success' : True , 'field' : session[field]['value'] , 'price' : session[field]['price'] , 'current' : session[field]['current'] , 'total'  : get_price(request,form_name) }
+    total = get_price(request,form_name)
+    save_total = request.session['discount']['save']
+    return { 'success' : True , 'field' : session[field]['value'] , 'price' : session[field]['price'] , 'current' : session[field]['current'] , 'total'  : total , 'saving' : save_total }
