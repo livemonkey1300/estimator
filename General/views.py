@@ -158,7 +158,7 @@ def create_voip(request,extend=False):
     ajax_handler = ajax(request,'VOIP',VOIP_Form)
     if request.method == 'POST':
         if extend:
-            ajax_handler.add_form_set(VOIP_Extend_Form)
+            ajax_handler.add_form_init_session(VOIP_Extend_Form)
         validation = ajax_handler.get_estimate_context('create_voip')
         if validation['valid']:
           context.update( validation['context'] )
@@ -166,7 +166,7 @@ def create_voip(request,extend=False):
         else:
           return redirect('General:index')
     else:
-        ajax_handler.add_form_set(VOIP_Form)
+        ajax_handler.add_form_init_session(VOIP_Form)
         context.update(ajax_handler.get_context('create_voip'))
         return render(request, 'General/voip_calc.html', context )
 
