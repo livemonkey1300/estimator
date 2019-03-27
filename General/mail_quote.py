@@ -10,19 +10,22 @@ class Mailer:
         self.request = request
         self.form = form.cleaned_data
         # self.headers = {'Reply-To': 'sales@dnsnetworks.ca' }
-        self.headers = {'Reply-To': 'adam@dnsnetworks.ca' }
-        self.from_email = 'webmaster@dnsnetworks.ca'
+        self.headers = {'Reply-To': 'sales@dnsnetworks.ca' }
+        self.from_email = 'sales@dnsnetworks.ca'
         self.content_subtype = "html"
         self.content = ''
         # self.to = ['adam@dnsnetworks.ca','shawn.ebbs@dnsnetworks.ca','natasha@dnsnetworks.ca']
-        self.to = ['adam@dnsnetworks.ca']
+        self.to = []
 
-        self.to_admin = ['adam@dnsnetworks.ca']
-        self.from_email_admin = 'webmaster@dnsnetworks.ca'
-        self.headers_admin = {'Reply-To': 'adam@dnsnetworks.ca' }
+        self.to_admin = ['sales@dnsnetworks.ca']
+        self.from_email_admin = ''
+        self.headers_admin = {'Reply-To': '' }
 
     def set_mail_config(self):
-        return { 'first_name' : self.form['your_name'] , 'last_name' : self.form['last_name'] , 'email' : self.form['email'] , 'telephone' : self.form['tel'] }
+        self.from_email_admin = self.form['email']
+        self.headers_admin = {'Reply-To': self.form['email'] }
+        self.to = [self.form['email']]
+        return { 'first_name' : self.form['your_name'] , 'last_name' : self.form['last_name'] , 'email' : self.form['email'] , 'telephone' : eval(self.form['tel']) }
 
     def build_content(self):
         cart = self.request.session['saved']
@@ -35,7 +38,14 @@ class Mailer:
 
     def send(self):
         # self.set_mail_config()
-        email = EmailMessage('Quote', self.build_content() , to=self.to ,headers=self.headers)
+        email = EmailMessage('Estimate', self.build_content() , to=self.to ,headers=self.headers)
         email.from_email = self.from_email
+        email.content_subtype = self.content_subtype
+        email.send()
+
+    def send_admin(self):
+        # self.set_mail_config()
+        email = EmailMessage('Estimate %s' % self.from_email_admin , self.build_content() , to=self.to_admin ,headers=self.headers_admin)
+        email.from_email = self.from_email_admin
         email.content_subtype = self.content_subtype
         email.send()
