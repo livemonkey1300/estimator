@@ -9,6 +9,7 @@ from .forms import TIME_MANAGEMENT_Form ,EXCHANGE_Form ,VOIP_Form ,VIRTUAL_MACHI
 
 from .json_import import update_session , get_price , get_extended , set_rebate
 from .mail_quote  import Mailer
+from .ajax_session import AJAX as ajax
 
 def index(request):
   context = {}
@@ -153,48 +154,24 @@ def edit_exchange(request,pk):
 
 
 def create_voip(request,extend=False):
-    print('Was Posted')
-    flush = reverse('General:flush')
-    location = reverse('General:create_voip')
-    send_url = reverse('General:send_email')
-    call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
     context = { 'APP' : 'VOIP' }
+    ajax_handler = ajax(request,'VOIP',VOIP_Form)
     if request.method == 'POST':
-        print('Was Posted POST %s' % request.POST)
-        form_request = VOIP_Form(request.POST)
-        form = get_extended(request,form_request,'VOIP')
         if extend:
-            form_request2 = VOIP_Extend_Form(request.POST)
-            form = get_extended(request,form_request,'VOIP',form_request2)
-        if form['redirect']:
-          if form['mail']:
-            print('Was Posted Mail')
-            context.update( { 'quote' : form['mail_data'] , 'flush' : flush , 'total' :  get_price(request,'VOIP') } )
-            return render(request, 'General/Main/mail.html', context )
-          else:
-            return redirect('General:index')
+            ajax_handler.add_form_set(VOIP_Extend_Form)
+        validation = ajax_handler.get_estimate_context('create_voip')
+        if validation['valid']:
+          context.update( validation['context'] )
+          return render(request, 'General/Main/mail.html', context )
         else:
-          context.update( {'form': form['form'] , 'email': send_url, 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  })
-          return render(request, 'General/voip_calc.html', context )
+          return redirect('General:index')
     else:
-        try:
-          session = request.session['tmp']['VOIP']
-          form_request = VOIP_Form(initial=session)
-        except KeyError:
-          form_request = VOIP_Form()
-        form = form_request.get_field(request)
-        context.update( {'form': form['form'] , 'email': send_url, 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  } )
+        ajax_handler.add_form_set(VOIP_Form)
+        context.update(ajax_handler.get_context('create_voip'))
         return render(request, 'General/voip_calc.html', context )
 
 def create_voip_extend(request):
-    flush = reverse('General:flush')
-    location = reverse('General:create_voip_extend')
-    send_url = reverse('General:send_email')
-    call = reverse('General:call' , kwargs={'form_name': 'VOIP' } )
-    form_request = VOIP_Extend_Form()
-    form = form_request.get_field(request)
-    context = {'form': form['form'] , 'email': send_url, 'pk' : location , 'call' : call , 'total' :  get_price(request,'VOIP')  }
-    return render(request, 'General/voip_extend.html', context )
+    return ajax(request,'VOIP',VOIP_Extend_Form,start_form=True).get_render('create_voip_extend')
 
 def edit_voip(request,pk):
   if request.user.is_authenticated:
@@ -265,4 +242,5 @@ def edit_virtual_machine(request,pk):
 
 
 def ajax_call(request,form_name=False,field=False):
-    return HttpResponse(json.dumps(update_session(request,form_name,field)), content_type="application/json")
+    updates = ajax(request,form_name)
+    return HttpResponse(json.dumps(updates.quick_update_respond(field)), content_type="application/json")

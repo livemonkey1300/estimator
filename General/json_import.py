@@ -359,7 +359,7 @@ def set_session(form_reference , request=False,form_name=False):
             return { 'form' : form_reference , 'redirect' : False , 'mail' : False }
         return { 'form' : form_reference , 'redirect' : False }
     else:
-      for item in form_reference.fields.items():
+      for item in form_reference.value.items():
           field = { 'initial' : item[1].initial , 'name' : item[0] , 'type' : item[1].widget.input_type }
           try:
               init_session(request,form_name,field)
