@@ -54,7 +54,7 @@
 
 													Hello <span style="font-weight: 800; color: #0d0d0d;">	{{ first_name }} {{ last_name }}</span><br>
 													<span style="font-weight: 800; color: #0d0d0d;">	{{ email }} </span><br>
-													<span style="font-weight: 800; color: #0d0d0d;">	{{ telephone.0 }} {{ telephone.1 }}</span><br>
+													<span style="font-weight: 800; color: #0d0d0d;">	{{ telephone.0 }} {% if not telephone.1 %} ext {{ telephone.1 }}{% endif %} </span><br>
 													<br>Please see your estimate below:
 
 												</td>

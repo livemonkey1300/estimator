@@ -34,12 +34,14 @@ def show_email(request):
 
 
 
-def mail_form(request):
+def mail_form(request,contact=False):
     if request.method == 'POST':
         form = MAILME(request.POST)
         if form.is_valid():
             mail_form = Mailer(request,form)
             mail_form.send()
+            if contact:
+                mail_form.send_admin()
             print('OK')
         return render(request,  'General/Main/mail_form.html', { 'mail_form' : form })
     else:

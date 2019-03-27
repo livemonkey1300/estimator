@@ -27,6 +27,7 @@ urlpatterns = [
     path('show_email/', views.show_email, name='show_email'),
     path('send/', views.send_email, name='send_email'),
     path('mail_form/', views.mail_form, name='mail_form'),
+    path('mail_form/<slug:contact>', views.mail_form, name='mail_form'),
     path('extend_voip/', views.create_voip_extend, name='create_voip_extend'),
     path('discount/', views.discount, name='discount'),
 ]

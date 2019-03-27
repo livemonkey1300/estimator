@@ -277,12 +277,14 @@ $( window ).on( "load", function() {
 
 $(function() {
 		$('#send_estimate').click( function()  {
+			post_request()
 			$.post( "{% url 'General:mail_form' %}" , $('#voip_mail').serialize()).done(function(data) {
 				$( "#change_estimate_form" ).html(data)
 			})
 		})
 		$('#send_estimate_contact').click( function()  {
-			$.post( "{% url 'General:mail_form' %}" , $('#voip_mail').serialize()).done(function(data) {
+			post_request()
+			$.post( "{% url 'General:mail_form' 'contact' %}" , $('#voip_mail').serialize()).done(function(data) {
 				$( "#change_estimate_form" ).html(data)
 			})
 		})
