@@ -107,21 +107,28 @@ def get_virtual_machine(context):
 
 
 @register.simple_tag(takes_context=True)
-def render_field(context,field):
+def render_field(context,field,field2=False):
     content = { 'field' : field }
     type = field.field.widget.input_type
     call = ''
     csrf_token = ''
+    form_id = ''
     try:
         call = context['call']
         csrf_token = context['csrf_token']
+        form_id = context['form_id']
     except KeyError:
         pass
-    content = { 'field' : field , 'call' : call , 'csrf_token' : csrf_token }
+    content = { 'field' : field , 'call' : call , 'csrf_token' : csrf_token , 'form_id' : form_id }
     if type == 'range':
         return mark_safe(render_to_string('General/TAG_TPL/Field/Number_Slider.html' , content ))
     if type == 'number':
         return mark_safe(render_to_string('General/TAG_TPL/Field/Number_PM.html' , content ))
+    if type == 'select':
+        if field2:
+            content.update( { 'field2' : field2 } )
+            return mark_safe(render_to_string('General/TAG_TPL/Field/default_select_field_to_field.html' , content ))
+        return mark_safe(render_to_string('General/TAG_TPL/Field/default_select.html' , content ))
     return mark_safe(render_to_string('General/TAG_TPL/Field/default.html' , content ))
 
 @register.simple_tag(takes_context=True)

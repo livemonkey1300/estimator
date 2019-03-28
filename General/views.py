@@ -5,7 +5,7 @@ from django.http import HttpResponse
 import json
 
 from .models import TIME_MANAGEMENT ,EXCHANGE ,VOIP ,VIRTUAL_MACHINE
-from .forms import TIME_MANAGEMENT_Form ,EXCHANGE_Form ,VOIP_Form ,VIRTUAL_MACHINE_Form , MAILME , VOIP_Extend_Form
+from .forms import TIME_MANAGEMENT_Form ,EXCHANGE_Form ,VOIP_Form ,VIRTUAL_MACHINE_Form , MAILME , VOIP_Extend_Form , DATA_DISK_Form
 
 from .json_import import update_session , get_price , get_extended , set_rebate
 from .mail_quote  import Mailer
@@ -161,6 +161,8 @@ def create_voip(request,extend=False):
     if request.method == 'POST':
         if extend:
             ajax_handler.add_form_init_session(VOIP_Extend_Form)
+        else:
+            ajax_handler.init_form_session()
         validation = ajax_handler.get_estimate_context('create_voip')
         if validation['valid']:
           context.update( validation['context'] )
@@ -170,10 +172,11 @@ def create_voip(request,extend=False):
     else:
         ajax_handler.add_form_init_session(VOIP_Form)
         context.update(ajax_handler.get_context('create_voip'))
+        context.update({'VOIP_FORM' : ajax_handler.get_render_initial_form('create_voip','inititial_card_form.html',sub_form_url='create_voip_extend')})
         return render(request, 'General/voip_calc.html', context )
 
 def create_voip_extend(request):
-    return ajax(request,'VOIP',VOIP_Extend_Form,start_form=True).get_render('create_voip_extend')
+    return ajax(request,'VOIP',VOIP_Extend_Form,start_form=True).get_render_extended('create_voip_extend')
 
 def edit_voip(request,pk):
   if request.user.is_authenticated:
@@ -195,31 +198,24 @@ def edit_voip(request,pk):
 
 
 def create_virtual_machine(request):
-    flush = reverse('General:flush')
-    location = reverse('General:create_virtual_machine')
-    call = reverse('General:call' , kwargs={'form_name': 'VIRTUAL_MACHINE' } )
     context = { 'APP' : 'VIRTUAL_MACHINE' }
+    ajax_handler = ajax(request,'VIRTUAL_MACHINE',VIRTUAL_MACHINE_Form)
+    ajax_handler.add_form(DATA_DISK_Form)
     if request.method == 'POST':
-        form_request = VIRTUAL_MACHINE_Form(request.POST)
-        form = form_request.get_field(request)
-        if form['redirect']:
-          if form['mail']:
-            context.update( { 'quote' : form['mail_data'] , 'flush' : flush , 'total' :  get_price(request,'VIRTUAL_MACHINE') } )
-            return render(request, 'General/Main/mail.html', context )
-          else:
-            return redirect('General:index')
+        ajax_handler.init_form_session()
+        validation = ajax_handler.get_estimate_context('create_virtual_machine')
+        if validation['valid']:
+          context.update( validation['context'] )
+          return render(request, 'General/Main/mail.html', context )
         else:
-          context.update( {'form': form['form'] , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  })
-          return render(request, 'General/form.html', context )
+          return redirect('General:index')
     else:
-        try:
-          session = request.session['tmp']['VIRTUAL_MACHINE']
-          form_request = VIRTUAL_MACHINE_Form(initial=session)
-        except KeyError:
-          form_request = VIRTUAL_MACHINE_Form()
-        form = form_request.get_field(request)
-        context.update( {'form': form['form'] , 'pk' : location , 'call' : call , 'total' :  get_price(request,'VIRTUAL_MACHINE')  } )
-        return render(request, 'General/form.html', context )
+        ajax_handler.add_form_init_session(VIRTUAL_MACHINE_Form)
+        context.update(ajax_handler.get_context('create_virtual_machine'))
+        context.update({'VM_FORM' : ajax_handler.get_render_initial_form('create_virtual_machine','inititial_card_form.html')})
+        context.update({'DATA_DISK' : ajax_handler.get_render_small_form('create_virtual_machine','disk_type.html',form_id=1)})
+        return render(request, 'General/vm_calc.html', context )
+
 
 
 def edit_virtual_machine(request,pk):
@@ -243,6 +239,9 @@ def edit_virtual_machine(request,pk):
 
 
 
-def ajax_call(request,form_name=False,field=False):
+def ajax_call(request,form_name=False,field=False,field2=False):
     updates = ajax(request,form_name)
-    return HttpResponse(json.dumps(updates.quick_update_respond(field)), content_type="application/json")
+    updates.set_current_field_session(field)
+    if field2:
+        updates.set_current_field_session(field2)
+    return HttpResponse(json.dumps(updates.get_session_updated_json()), content_type="application/json")

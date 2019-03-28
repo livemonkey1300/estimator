@@ -114,9 +114,8 @@ PRICE_TABLE = {
   'officestandard' :  { 'price' :  25.0  },
   'businesshoursmfest' :  { 'price' :  50.0  },
   'monsunest' :  { 'price' :  90.0  },
-
+  'data_disk_size' : { 'price' : 'on' , 'on' : 'data_disk' }
 }
-
 
 
 

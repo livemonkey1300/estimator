@@ -132,8 +132,13 @@ class VIRTUAL_MACHINE_Form(forms.ModelForm):
         return { 'success' : False }
 
 
-
-
+class DATA_DISK_Form(forms.ModelForm):
+  data_disk_size =  forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'min' : 0 , 'max' : 1000 }))
+  class Meta:
+    model = VIRTUAL_MACHINE
+    fields = (
+	'data_disk',
+    )
 
 
 class SignUpForm(UserCreationForm):

@@ -1,0 +1,42 @@
+{% load menu_tag %}
+<table>
+  <form id="{{ form_id }}" call={% if pk %}"{{ pk }}"{% endif %}>
+    <tbody>
+    {% csrf_token %}
+    {% for field in form %}
+    <tr>
+      <td>{{field.label}}</td><td>{% render_field field %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tbody>
+    <tr>
+      <td><span class="btn btn-primary" id='advance'>Advanced Options</span></td><td></td>
+    </tr>
+    </tbody>
+    <tbody id="advance_toggle" >
+    </tbody>
+    </form>
+</table>
+<script  type="text/javascript" data-cfasync="false">
+function get_{{ form_id }}_extend(){
+  		 var array = $("#advance_toggle").find('input,select').serializeArray();
+  		 return array
+  }
+function post_{{ form_id }}_request() {
+	var url =  $('#{{ form_id }}').attr( "call" )
+	var data = $('#{{ form_id }}').serializeArray()
+	$.each(get_extend(), function( index, value ) {
+		data.push({ name : value.name , value : value.value  })
+	});
+	$.post( url  , data ).done(function() {
+		 $('#quote_data').attr('src', "{% url 'General:show_email' %}").attr('style', '' ).attr('width', '100%' ).attr('height', '1000px' );
+		 $( "#change_estimate_form" ).load( "{% url 'General:mail_form' %}" );
+	})
+}
+
+$('#{{ form_id }}_request').click( function()  {
+   post_{{ form_id }}_request()
+})
+
+</script>

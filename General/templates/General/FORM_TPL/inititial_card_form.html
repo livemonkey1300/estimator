@@ -1,0 +1,108 @@
+{% load static %}
+{% load menu_tag %}
+<div class="card re_post">
+<div class="card-header">
+  Total<span id='price_{{ form_id }}'></span><span id='saving_{{ form_id }}'></span><button id="{{ form_id }}_request" class="btn btn-primary request_load" style="float: right;">Get My Quote</button><div id="content" style="float: right;"></div>
+</div>
+<div class="card-body">
+  <h5 class="card-title"></h5>
+  <p class="card-text">
+    {% load crispy_forms_tags %}
+      <table>
+      <form id="{{ form_id }}" call={% if pk %}"{{ pk }}"{% endif %} target="{{ form_id }}">
+        <tbody>
+        {% csrf_token %}
+        {% for field in form %}
+        <tr>
+          <td>{{field.label}}</td><td>{% render_field field %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        <tbody>
+        <tr>
+          <td><span class="btn btn-primary" id='{{ form_id }}_advance_trigger'>Advanced Options</span></td><td></td>
+        </tr>
+        </tbody>
+        <tbody id="{{ form_id }}_advance" >
+        </tbody>
+        </form>
+      </table>
+      <div id='results'></div>
+      <br>
+      <br>
+    </p>
+</div>
+<script type="text/javascript" src="{% static 'General/buttonstrip.min.js' %}"></script>
+<script type="text/javascript" data-cfasync="false" >
+function set_price(total, saving) {
+        $("#price").text('   '+ total + ' $' )
+      if (saving!= 0) {
+        $("#saving").text('  Saving ( '+ saving + ' $ )')
+      }else{
+        $("#saving").text(' ')
+      }
+    }
+
+    var bs1 = new ButtonStrip({
+        id: 'buttonStrip1'
+    });
+    bs1.addButton("Month-To-Month", true, 'click', function(){
+        $.get("{% url 'General:discount' %}", { discount: 1 } , function( data ) {
+          set_price(data.total , data.saving)
+        });
+    });
+    bs1.addButton("1 Year (Save 10%)", false, 'click', function(){
+      $.get("{% url 'General:discount' %}", { discount: 2 } , function( data ) {
+        set_price(data.total , data.saving)
+      });
+    });
+    bs1.addButton("3 Year (Save 15%)", false, 'click', function(){
+      $.get("{% url 'General:discount' %}", { discount: 3 } , function( data ) {
+          set_price(data.total , data.saving)
+            });
+      });
+    bs1.append('#content');
+
+function get_{{ form_id }}_extend(){
+  		 var array = $("#{{ form_id }}_advance").find('input,select').serializeArray();
+       console.log(array)
+  		 return array
+  }
+
+function post_{{ form_id }}_request() {
+	var url =  $('#{{ form_id }}').attr( "call" )
+	var data = $('#{{ form_id }}').serializeArray()
+	$.each(get_{{ form_id }}_extend(), function( index, value ) {
+		data.push({ name : value.name , value : value.value  })
+	});
+	$.post( url  , data ).done(function() {
+     alert('Posted')
+		 $('#quote_data').attr('src', "{% url 'General:show_email' %}").attr('style', '' ).attr('width', '100%' ).attr('height', '1000px' );
+		 $( "#change_estimate_form" ).load( "{% url 'General:mail_form' %}" );
+	})
+}
+
+
+$('#{{ form_id }}_request').click( function()  {
+   post_{{ form_id }}_request()
+   $(this).trigger('spawn')
+   $(this).change( function()  {
+      post_{{ form_id }}_request()
+   })
+})
+
+
+{% if sub_form_url %}
+$('#{{ form_id }}_advance_trigger').click( function( )  {
+  $( "#{{ form_id }}_advance" ).load( "{{ sub_form_url }}" )
+   $('#{{ form_id }}').attr( "call" ,"{% url 'General:create_voip' 'extend' %}"  )
+  });
+{% endif %}
+</script>
+
+
+
+<p style="display:none;">This is a test form</p>
+<br>
+
+</div>

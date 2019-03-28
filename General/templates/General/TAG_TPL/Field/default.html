@@ -2,9 +2,16 @@
 <input type="hidden" get='{{ field.html_name}}' register='{{ field.value }}' call='{{call}}' >
 <div class="selectstyle">{% render_field field %}</div>
 <script type="text/javascript" data-cfasync="false">
-$(function() {
-  $("#id_{{ field.html_name}}").change( function() {
-    $( "[get='{{ field.html_name }}']" ).attr( "register" , $(this).val() )
+  $("input[name='{{ field.html_name}}']").change( function() {
+    $("input[name='{{ field.html_name}}']").val( $(this).val() )
+    $.post( '{{call}}{{ field.html_name}}' , { 'csrfmiddlewaretoken': '{{ csrf_token }}' , '{{ field.html_name}}' : $( this ).val() } ).done(function( data ) {
+      console.log(data)
+        $("#price_{{ form_id }}").text('   '+ data.total + ' $')
+        if (data.saving != 0) {
+        $("#saving_{{ form_id }}").text('  Saving ( '+ data.saving + ' $ )')
+        }else{
+        $("#saving_{{ form_id }}").text(' ')
+      }
+    })
   })
-})
 </script>

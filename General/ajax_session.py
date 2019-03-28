@@ -1,6 +1,13 @@
 from .json_import import PRICE_TABLE
 from django.urls import reverse
 from django.shortcuts import render
+from django import template
+from django.template import Template
+from django.template import loader, Context
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
+from django.template.loader import get_template
+from django.template import RequestContext
 
 class AJAX:
     def __init__( self , request , SESSION_NAME , FORM_OBJECT_REFERENCE=False , start_form=False , reset=False , session_process=True ):
@@ -21,19 +28,31 @@ class AJAX:
         self.start_form = start_form
         self.init_process_form(session_process)
 
-    def get_render(self,post_location,template_direction='FORM_TPL/extend.html'):
+    def get_render_extended(self,post_location,template_direction='FORM_TPL/extend.html'):
         template = 'General/%s' % template_direction
         return render(self.request , template , self.get_context(post_location) )
 
-    def get_context(self,post_location):
+    def get_render_small_form(self,post_location,template_direction='extend.html',form_id=0):
+        template = 'General/FORM_TPL/%s' % template_direction
+        return mark_safe(render_to_string(template , self.get_context(post_location,form_id=form_id) , request=self.request ))
+
+    def get_render_initial_form(self,post_location,template_direction='inititial_Form.html',sub_form_url=False):
+        template = 'General/FORM_TPL/%s' % template_direction
+        return mark_safe(render_to_string(template , self.get_context(post_location,sub_form_url) , request=self.request ))
+
+
+    def get_context(self,post_location,sub_form_url=False,form_id=0):
         context = {
-        'form': self.Forms[0] ,
+        'form': self.Forms[form_id] ,
         'email': reverse('General:send_email'),
         'pk' : reverse('General:%s' % post_location ) ,
         'call' : reverse('General:call' , kwargs={'form_name': self.session_name }) ,
         'flush' : reverse('General:flush'),
         'total' : self.total ,
+        'form_id' : '%s_FORM' % self.session_name ,
         }
+        if sub_form_url:
+            context.update({ 'sub_form_url' : reverse('General:%s' % sub_form_url ) })
         return context
 
     def get_estimate_context(self,post_location):
@@ -76,12 +95,18 @@ class AJAX:
                 self.add_form(self.FORM_OBJECT_REFERENCE)
 
 # Add Form reference , For pre session population
-    def add_form(self,form,param=False):
+    def add_form(self,form,instance_ref=False):
         if self.post:
-            self.Forms.append(form(self.request.POST))
+            if instance_ref:
+                self.Forms.append(form(self.request.POST,instance=instance_ref))
+            else:
+                self.Forms.append(form(self.request.POST))
         else:
             try:
-                self.Forms.append(form(initial=request.session['tmp'][self.session_name]))
+                if instance_ref:
+                    self.Forms.append(form(instance=instance_ref))
+                else:
+                    self.Forms.append(form(initial=request.session['respawn'][self.session_name]))
             except Exception as e:
                 self.Forms.append(form())
 
@@ -89,9 +114,22 @@ class AJAX:
 # Fetch the current field refenced price
     def get_current_field_price(self):
         try:
-            return  PRICE_TABLE[self.field]['price']
+            price = PRICE_TABLE[self.field]['price']
+            print(price)
+            if price == 'on':
+                reference = PRICE_TABLE[self.field]['on']
+                return  self.session_referece[reference]['price']
+            else:
+                return price
         except KeyError:
-            return 0
+            try:
+                print(self.field)
+                print(self.current_field['value'])
+                price = PRICE_TABLE[self.field][self.current_field['value']]
+                print(price)
+                return  price
+            except KeyError:
+                return 0
 
     def set_respawn_form_data(self,forms_post_data):
         try:
@@ -137,6 +175,7 @@ class AJAX:
          except KeyError:
              self.session_referece[self.field] = {}
              self.current_field = self.session_referece[self.field]
+             print(self.request.POST.get(self.field))
          self.current_field['value'] = self.request.POST.get(self.field)
          self.current_field['price'] = self.get_current_field_price()
          try:
@@ -164,6 +203,7 @@ class AJAX:
      remove = False
      self.field = field
      if self.post:
+         print(self.field)
          self.post_set_current_field_session()
      else:
          self.initial_set_current_field_session(value)

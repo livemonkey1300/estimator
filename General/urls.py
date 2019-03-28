@@ -19,6 +19,7 @@ urlpatterns = [
     path('call', views.ajax_call, name='call'),
     path('call/<slug:form_name>/', views.ajax_call, name='call'),
     path('call/<slug:form_name>/<slug:field>', views.ajax_call, name='call'),
+    path('call/<slug:form_name>/<slug:field>/<slug:field2>', views.ajax_call, name='call'),
     path('flush/', views.flush_save, name='flush'),
     path('login/', accounts.login, name='login'),
     path('logout/', accounts.logout_view, name='logout'),
