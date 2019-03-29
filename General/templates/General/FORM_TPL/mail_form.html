@@ -1,0 +1,15 @@
+<form method="post" id="voip_mail" class="row" call="{{post_url}}" >
+  {% csrf_token %}
+  <table>
+  {% for field in form %}
+  <tr>
+    <td>{{ field }}</td>
+  </tr>
+  {% if field.errors %}
+  <tr class='tr-danger'>
+      <td><span class="text-danger">{{ field.label }} {% for error in field.errors %}{{ error|escape }}{% endfor %}</span></td>
+  </tr>
+  {% endif %}
+  {% endfor %}
+  </table>
+</form>

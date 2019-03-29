@@ -110,11 +110,42 @@ class VIRTUAL_MACHINE_Form(forms.ModelForm):
     fields = (
 	'datacenter',
 	'operating_system',
-	'system_disk',
-	'data_disk',
     'network_throughput',
+    )
+
+    widgets = {
+            'network_throughput' : forms.NumberInput(attrs={'type': 'range' , 'min' : 1 , 'max' : 1000 }),
+    }
+
+
+class VIRTUAL_MACHINE_Instance_Form(forms.ModelForm):
+  class Meta:
+    model = VIRTUAL_MACHINE
+    fields = (
 	'memory',
 	'vcpu',
+    )
+
+class DATA_DISK_Form(forms.ModelForm):
+  data_disk_size =  forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'min' : 0 , 'max' : 1000 }))
+  class Meta:
+    model = VIRTUAL_MACHINE
+    fields = (
+	'data_disk',
+    )
+
+class SYSTEM_DISK_Form(forms.ModelForm):
+  system_disk_size =  forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'min' : 0 , 'max' : 1000 }))
+  class Meta:
+    model = VIRTUAL_MACHINE
+    fields = (
+	'system_disk',
+    )
+
+class Applications_Form(forms.ModelForm):
+  class Meta:
+    model = VIRTUAL_MACHINE
+    fields = (
     'quickbooks',
     'sage',
     'sapbusinessone',
@@ -125,19 +156,12 @@ class VIRTUAL_MACHINE_Form(forms.ModelForm):
     'monsunest',
     )
 
-  def get_field(self,request=False):
-      if request:
-        return set_session(self,request,'VIRTUAL_MACHINE')
-      else:
-        return { 'success' : False }
-
-
-class DATA_DISK_Form(forms.ModelForm):
-  data_disk_size =  forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'min' : 0 , 'max' : 1000 }))
+class Management_Form(forms.ModelForm):
   class Meta:
     model = VIRTUAL_MACHINE
     fields = (
-	'data_disk',
+    'businesshoursmfest',
+    'monsunest',
     )
 
 

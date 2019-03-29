@@ -5,11 +5,13 @@ from django.http import HttpResponse
 import json
 
 from .models import TIME_MANAGEMENT ,EXCHANGE ,VOIP ,VIRTUAL_MACHINE
-from .forms import TIME_MANAGEMENT_Form ,EXCHANGE_Form ,VOIP_Form ,VIRTUAL_MACHINE_Form , MAILME , VOIP_Extend_Form , DATA_DISK_Form
+from .forms import TIME_MANAGEMENT_Form ,EXCHANGE_Form ,VOIP_Form ,VIRTUAL_MACHINE_Form , MAILME , VOIP_Extend_Form , DATA_DISK_Form , VIRTUAL_MACHINE_Instance_Form , SYSTEM_DISK_Form
+from .forms import Applications_Form , Management_Form
 
 from .json_import import update_session , get_price , get_extended , set_rebate
 from .mail_quote  import Mailer
 from .ajax_session import AJAX as ajax
+from .ajax_session import FORM_INIT
 
 def index(request):
   context = {}
@@ -36,18 +38,15 @@ def show_email(request):
 
 
 def mail_form(request,contact=False):
-    if request.method == 'POST':
-        form = MAILME(request.POST)
-        if form.is_valid():
-            mail_form = Mailer(request,form)
-            mail_form.send()
-            if contact:
-                mail_form.send_admin()
-            print('OK')
-        return render(request,  'General/Main/mail_form.html', { 'mail_form' : form })
-    else:
-        form = MAILME()
-    return render(request,  'General/Main/mail_form.html', { 'mail_form' : form })
+    form = FORM_INIT(request,default_post_url='mail_form')
+    form.add_form(MAILME,context_name='mail_form',template_name='mail_form')
+    context = form.get_form()
+    if form.valid:
+        mail_form = Mailer(request,context['ref_mail_form'])
+        mail_form.send()
+        if contact:
+            mail_form.send_admin()
+    return render(request,  'General/Main/mail_form.html', context )
 
 # Email quote
 def send_email(request):
@@ -201,6 +200,10 @@ def create_virtual_machine(request):
     context = { 'APP' : 'VIRTUAL_MACHINE' }
     ajax_handler = ajax(request,'VIRTUAL_MACHINE',VIRTUAL_MACHINE_Form)
     ajax_handler.add_form(DATA_DISK_Form)
+    ajax_handler.add_form(VIRTUAL_MACHINE_Instance_Form)
+    ajax_handler.add_form(SYSTEM_DISK_Form)
+    ajax_handler.add_form(Applications_Form)
+    ajax_handler.add_form(Management_Form)
     if request.method == 'POST':
         ajax_handler.init_form_session()
         validation = ajax_handler.get_estimate_context('create_virtual_machine')
@@ -212,8 +215,12 @@ def create_virtual_machine(request):
     else:
         ajax_handler.add_form_init_session(VIRTUAL_MACHINE_Form)
         context.update(ajax_handler.get_context('create_virtual_machine'))
-        context.update({'VM_FORM' : ajax_handler.get_render_initial_form('create_virtual_machine','inititial_card_form.html')})
+        context.update({'VM_FORM' : ajax_handler.get_render_small_form('create_virtual_machine')})
         context.update({'DATA_DISK' : ajax_handler.get_render_small_form('create_virtual_machine','disk_type.html',form_id=1)})
+        context.update({'Instance_Type' : ajax_handler.get_render_small_form('create_virtual_machine','Instance_Type.html',form_id=2)})
+        context.update({'SYSTEM_DISK' : ajax_handler.get_render_small_form('create_virtual_machine','system_disk_type.html',form_id=3)})
+        context.update({'Applications' : ajax_handler.get_render_small_form('create_virtual_machine','extend_app.html',form_id=4)})
+        context.update({'Management' : ajax_handler.get_render_small_form('create_virtual_machine','extend_managed.html',form_id=5)})
         return render(request, 'General/vm_calc.html', context )
 
 

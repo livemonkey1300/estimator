@@ -9,6 +9,82 @@ from django.utils.safestring import mark_safe
 from django.template.loader import get_template
 from django.template import RequestContext
 
+class FORM_INIT:
+    def __init__( self , request , FORM_OBJECT_REFERENCE=False , default_post_url=False , template_name=False,instance_ref=False,context_name=False):
+        self.request = request
+        self.FORM_OBJECT_REFERENCE = FORM_OBJECT_REFERENCE
+        self.Forms = []
+        self.Forms_Return = []
+        self.template = {}
+        self.post = False
+        self.context = {}
+        self.default_post_url = ''
+        self.valid = False
+        self.set_default_post_url(default_post_url)
+        self.check_is_post()
+
+    def check_is_post(self):
+        if self.request.method == 'POST':
+            self.post = True
+
+    def set_default_post_url(self , post_url ):
+        if post_url:
+            self.set_default_post_url =  reverse('General:%s' % post_url )
+
+    def init_form(self,template_name,instance_ref,context_name):
+        print(template_name,instance_ref,context_name)
+        if template_name and instance_ref and context_name:
+            self.add_form(self.FORM_OBJECT_REFERENCE,template_name=template_name,context_name=context_name,instance_ref=instance_ref)
+        elif template_name and instance_ref:
+            self.add_form(self.FORM_OBJECT_REFERENCE,template_name=template_name,instance_ref=instance_ref)
+        elif template_name:
+            self.add_form(self.FORM_OBJECT_REFERENCE,template_name=template_name)
+        else:
+            self.add_form(self.FORM_OBJECT_REFERENCE)
+
+
+    def add_form(self,form,instance_ref=False,template_name='inititial_Form',context_name=False,post_url=False):
+        template = 'General/FORM_TPL/%s.html' % template_name
+        if not context_name:
+            context_name = form.__class__.__name__
+        if self.post:
+            if instance_ref:
+                self.Forms.append({ 'form' : form(self.request.POST,instance=instance_ref) , 'template' : template , 'context_name' : context_name , 'post_url' : self.set_default_post_url })
+            else:
+                self.Forms.append({ 'form' : form(self.request.POST) , 'template' : template , 'context_name' : context_name , 'post_url' : self.set_default_post_url })
+        else:
+            if instance_ref:
+                self.Forms.append({ 'form' : form(instance=instance_ref)  , 'template' : template ,  'context_name' : context_name , 'post_url' : self.set_default_post_url  } )
+            else:
+                self.Forms.append({ 'form' : form() , 'template' : template ,  'context_name' : context_name , 'post_url' : self.set_default_post_url  } )
+
+    def get_context(self,form,post_url):
+        print('General:%s' % post_url)
+        context = {
+        'form': form ,
+        'post_url' : self.set_default_post_url ,
+        }
+        return context
+
+    def get_form_render(self,form,post_url,template):
+        return mark_safe(render_to_string(template , self.get_context(form,post_url) , request=self.request ))
+
+    def get_form(self):
+        if self.post:
+            for Forms in self.Forms:
+                form = Forms['form']
+                self.context.update({ Forms['context_name'] : '' })
+                if form.is_valid():
+                    self.context.update({ Forms['context_name'] : 'Tanks Form Submiting' , 'ref_%s' % Forms['context_name'] : Forms['form'] })
+                    self.valid = True
+                else:
+                    self.context.update({ Forms['context_name'] : self.get_form_render(form,Forms['post_url'],Forms['template']) , 'ref_%s' % Forms['context_name'] : Forms['form'] })
+        else:
+            for Forms in self.Forms:
+                self.context.update({ Forms['context_name'] : self.get_form_render(Forms['form'],Forms['post_url'],Forms['template']) , 'ref_%s' % Forms['context_name'] : Forms['form'] })
+        return self.context
+
+
 class AJAX:
     def __init__( self , request , SESSION_NAME , FORM_OBJECT_REFERENCE=False , start_form=False , reset=False , session_process=True ):
         self.request = request
@@ -177,7 +253,10 @@ class AJAX:
              self.current_field = self.session_referece[self.field]
              print(self.request.POST.get(self.field))
          self.current_field['value'] = self.request.POST.get(self.field)
-         self.current_field['price'] = self.get_current_field_price()
+         if self.current_field['value'] == 'off':
+             self.current_field['price'] = 0
+         else:
+             self.current_field['price'] = self.get_current_field_price()
          try:
               self.current_field['current'] = float(self.current_field['value']) * self.current_field['price']
          except Exception as e:

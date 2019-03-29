@@ -119,7 +119,10 @@ def render_field(context,field,field2=False):
         form_id = context['form_id']
     except KeyError:
         pass
+    print(type ,field.label )
     content = { 'field' : field , 'call' : call , 'csrf_token' : csrf_token , 'form_id' : form_id }
+    if type == 'checkbox':
+        return mark_safe(render_to_string('General/TAG_TPL/Field/default_checkbox.html' , content ))
     if type == 'range':
         return mark_safe(render_to_string('General/TAG_TPL/Field/Number_Slider.html' , content ))
     if type == 'number':

@@ -1,0 +1,4 @@
+{% load menu_tag %}
+      <tr>
+        <td>Fully Managed</td><td>{% for field in form %}{% render_field field %}{% endfor %}</td>
+      </tr>

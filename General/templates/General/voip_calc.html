@@ -177,6 +177,22 @@ $('.request_load').on( "submit", function() {
 	$(this).trigger('change')
 })
 
+function get_voip_mail(){
+  		 var array = $("#voip_mail").find('input,select').serializeArray();
+  		 return array
+}
+function post_voip_mail_request() {
+	var url =  $('#voip_mail').attr( "call" )
+	var data = $('#voip_mail').serializeArray()
+	$.each(get_voip_mail(), function( index, value ) {
+		data.push({ name : value.name , value : value.value  })
+	});
+	$.post( url  , data ).done(function( call ) {
+     $('#change_estimate_form').html( call );
+		 $('#quote_data').attr('src', "{% url 'General:show_email' %}").attr('style', '' ).attr('width', '100%' ).attr('height', '1000px' );
+	})
+}
+
 $('.request_load').on( "spawn", function() {
 	$('#change_estimate_div').show()
 	$('#change_estimate_form,#estimate_mail').show()
@@ -196,16 +212,10 @@ $('#preview').click( function()  {
 
 $(function() {
 		$('#send_estimate').click( function()  {
-			post_request()
-			$.post( "{% url 'General:mail_form' %}" , $('#voip_mail').serialize()).done(function(data) {
-				$( "#change_estimate_form" ).html(data)
-			})
+			post_voip_mail_request()
 		})
 		$('#send_estimate_contact').click( function()  {
-			post_request()
-			$.post( "{% url 'General:mail_form' 'contact' %}" , $('#voip_mail').serialize()).done(function(data) {
-				$( "#change_estimate_form" ).html(data)
-			})
+			post_voip_mail_request()
 		})
 		$('#advance').click( function( )  {
 			$( "#advance_toggle" ).load( "{% url 'General:create_voip_extend' %}" )

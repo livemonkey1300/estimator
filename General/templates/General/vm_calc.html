@@ -143,8 +143,38 @@ a#advance{
 				<h2>Get your estimate<strong></strong></h2><br><br>
         <div class="row">
 					<div class="col-sm" id='estimate_mail_current'>
-						{{ VM_FORM }}
-						{{ DATA_DISK }}
+						{% load menu_tag %}
+						<div class="card re_post">
+						<div class="card-header">
+						  Total<span id='price_{{ form_id }}'></span><span id='saving_{{ form_id }}'></span><button id="{{ form_id }}_request" class="btn btn-primary request_load" style="float: right;">Get My Quote</button><div id="content" style="float: right;"></div>
+						</div>
+						<div class="card-body">
+						  <h5 class="card-title"></h5>
+						  <p class="card-text">
+						      <table>
+						      <form id="{{ form_id }}" call={% if pk %}"{{ pk }}"{% endif %} target="{{ form_id }}">
+						        <tbody>
+										{{ VM_FORM }}
+										{{ Instance_Type }}
+										{{ DATA_DISK }}
+										{{ SYSTEM_DISK }}
+										{{ Applications }}
+										{{ Management }}
+						        </tbody>
+						        <tbody>
+						        <tr>
+						          <td><span class="btn btn-primary" id='{{ form_id }}_advance_trigger'>Advanced Options</span></td><td></td>
+						        </tr>
+						        </tbody>
+						        <tbody id="{{ form_id }}_advance" >
+						        </tbody>
+						        </form>
+						      </table>
+						      <div id='results'></div>
+						      <br>
+						      <br>
+						    </p>
+						</div>
 					</div>
 <div class="col-sm-4" id='estimate_mail' style="display:none;" >
 <div class="card">

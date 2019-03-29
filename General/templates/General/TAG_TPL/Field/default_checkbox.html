@@ -1,0 +1,20 @@
+{% load widget_tweaks %}
+<div class="selectstyle">{{field.label}} {% render_field field %}</div>
+<script type="text/javascript" data-cfasync="false">
+  $("[name='{{ field.html_name}}']").click( function() {
+    if($(this).prop('checked') == true){
+      $(this).val('on')
+    }else{
+      $(this).val('off')
+    }
+    $.post( '{{call}}{{ field.html_name}}' , { 'csrfmiddlewaretoken': '{{ csrf_token }}' , '{{ field.html_name}}' : $( this ).val() } ).done(function( data ) {
+      console.log(data)
+        $("#price_{{ form_id }}").text('   '+ data.total + ' $')
+        if (data.saving != 0) {
+        $("#saving_{{ form_id }}").text('  Saving ( '+ data.saving + ' $ )')
+        }else{
+        $("#saving_{{ form_id }}").text(' ')
+      }
+    })
+  })
+</script>
